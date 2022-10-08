@@ -4,7 +4,15 @@ description: >-
   jejich hodnot na zobrazená data.
 ---
 
-# Základní práce s komponentami - Projekt  'RGB View'
+# Základní práce s komponentami - Projekt 'RGB View'
+
+Tato kapitola představuje základní představení projektu Angular a základní primitivní práci s komponentami a vazbami/interpolací dat. Bude vytvořena jednoduchá aplikace, která pomocí 3 posuvných prvků ukazuje zobrazenou barvu RGB v obdélníku.
+
+{% embed url="https://github.com/Engin1980/7opr3-rgbView" %}
+Zdrojové kódy relevantní aplikace
+{% endembed %}
+
+
 
 {% hint style="info" %}
 K vývoji můžeme používat libovolný smysluplný nástroj. Příkladem může být [Visual Studio Code](https://code.visualstudio.com/), nebo IntelliJ prostředí [IDEa](https://www.jetbrains.com/idea/). V tomto příspěvku bude použito vývojové prostředí [WebStorm](https://www.jetbrains.com/webstorm/). Prostředí se mohou lišit v míře podpory (a tím jednoduchosti tvorby), ale výsledná aplikace bude totožná bez ohlednu na použité prostředí.
