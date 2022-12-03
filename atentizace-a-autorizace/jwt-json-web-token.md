@@ -3,8 +3,8 @@
 JSON Web Token je otevřený standard ([RFC 7519](https://www.rfc-editor.org/rfc/rfc7519)) definující sebepopisný mechanismus pro předávání informací mezi dvěma stranami založený na formátu dat [JSON](https://www.w3schools.com/js/js\_json\_intro.asp). Cílem je poskytnout malou a kompaktní strukturu předávanou v rámci HTTP požadavků v HTTP hlavičce. Cílem JWT je poskytnout druhé straně informace o identitě volajícího. Typické použití JWT je k:
 
 * autentizaci - uživatel poskytne svá pověření (např. jméno+heslo) a obdrží JWT token, který popisuje jeho identitu a práva v rámci aplikace,
-* autorizaci - uživatel požádá o službu a přiloží k požadavku svůj JWT token; služba na základě JWT rozhodne, zda je uživatel oprávněn ji použít
-* předávání dat - JWT tokeny jsou podepsané; příjemce má tedy jistotu, že data obsažená v JWT tokenu josu důvěryhodná.
+* autorizaci - uživatel požádá o službu a přiloží k požadavku svůj JWT token; služba na základě JWT rozhodne, zda je uživatel oprávněn ji použít,
+* předávání dat - JWT tokeny jsou podepsané; příjemce má tedy jistotu, že data obsažená v JWT tokenu jsou důvěryhodná.
 
 ### Formát JWT
 
@@ -19,7 +19,7 @@ JWT token má obsah zapsaný ve formátu JSON. Token sestává ze tří částí
 }
 ```
 
-* Payload - obsah/data/claims. V obsahu tokenu je vlastní zpráva. V případě JWT jsou to tzv. prohlášení - _claims_ - uložené ve formátu JSON. Prohlášeí udávají informace o tokenu - kdo ho vydal, kdy, do kdy platí, pro koho je určen, a další. Blíže budou uvedeny dále.
+* Payload - obsah/data/claims. V obsahu tokenu je vlastní zpráva. V případě JWT jsou to tzv. prohlášení - _claims_ - uložené ve formátu JSON. Prohlášení udávají informace o tokenu - kdo ho vydal, kdy, do kdy platí, pro koho je určen, a další. Blíže budou uvedeny dále.
 
 ```json
 {
@@ -72,10 +72,10 @@ Pojmem JWT se chápe samotný JSON Web Token v jeho čisté podobě. Pro jeho p�
 
 Při přihlášení  pošle uživatel aplikaci své pověření (jméno+heslo apod.). Aplikace ověří správnost uživatele a jeho účtu, a pokud je uživatel korektně autentizován, vytvoří JWT Token. Do těla tokenu zapíše správná prohlášení, zejména kdo jej vytvořil (iss), kdo je subjekt (sub), případně pro koho je určen (aud). Dále vždy doplní datum vytvoření (iat), datum expirace (exp), případně datum začátku platnosti (nbf). Dále může doplnit vlastní prohlášení (například oprávnění, názvy rolí atp.). Poté se zvolí šifrovací algoritmus, tato informace se zapíše do hlavičky. Finálně se token podepíše, převede do Base64 a vrací uživateli.
 
-Při další komunikaci uživatel při každém požadavku posílá také tento token. Token se používá v HTTP hlavičce `Authorization` ve speciální formátu s prefixem `Bearer` , tedy například `Bearer eXjfelasef.boasefa.yosefeasfe`. Příjemce u HTTP požadavku zjistí, zda hlavička `Authorization` __ začíná na `Bearer`, následně tento prefix z tokenu odstraní. Následně dekóduje token z Base64 do bytového pole a čistý token potom příjemce z podpisu dešifruje. Následně:
+Při další komunikaci uživatel při každém požadavku posílá také tento token. Token se používá v HTTP hlavičce `Authorization` ve speciální formátu s prefixem `Bearer` , tedy například `Bearer eXjfelasef.boasefa.yosefeasfe`. Příjemce u HTTP požadavku zjistí, zda hlavička `Authorization` __ začíná na `Bearer`, následně tento prefix z tokenu odstraní. Poté dekóduje token z Base64 do bytového pole a čistý token potom příjemce z podpisu dešifruje. Následně:
 
 1. Porovná dešifrovaná data s původní hlavičkou a obsahem. Pokud se liší, token někdo pozměnil. Takový token je podvržený a nesmí být brán jako platný.
-2. Porovná aktuální čas s hodnotami iat, exp, nbf. Pokud aktuální čas nepasuje do platnosti tokenu, token ještě není aktuální nebo expiroval, a nesmí být brán jako platný.
+2. Porovná aktuální čas s hodnotami exp a nbf. Pokud aktuální čas nepasuje do platnosti tokenu, tj. token ještě není aktuální nebo expiroval, a nesmí být brán jako platný.
 3. Na základě dalších požavků může příjemce dekódat další prohlášení (například názvy rolí) a dle toho rozhodnout, zda má uživatel právo na provedení operace.
 
 <figure><img src="../.gitbook/assets/jwt.png" alt=""><figcaption></figcaption></figure>
