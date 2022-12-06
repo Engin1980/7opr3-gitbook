@@ -160,9 +160,9 @@ namespace JWTCoreDemo.Model
 Ve třídě uživatele není zmíněna _sůl_ použitá při hashování hesla. Je tomu tak proto, že pro hashování budeme využívat BCrypt, který sůl k heslu automaticky a ukládá sám. Pokud by se použil jiný přístup hashování, musela by třída uživatele obsahovat i tuto informaci.
 {% endhint %}
 
-## Implementace kontroleru a služeb
+## Implementace služeb
 
-Nejdříve implementujeme služby a následně jednoduché metody samotného kontroleru.
+Nejdříve implementujeme služby.
 
 ### Pomocná třída výjimky - ServiceException
 
@@ -359,3 +359,169 @@ Do projektu do složky `Services`vložíme třídu `SecurityService` a opět jej
 
 Nejdříve úvodní deklarace a konstruktor:
 
+{% code lineNumbers="true" %}
+```csharp
+private const int TOKEN_EXPIRATION_IN_SECONDS = 30;
+private readonly IConfiguration configuration;
+private readonly byte[] key = RandomNumberGenerator.GetBytes(128);
+
+public SecurityService([FromServices] IConfiguration configuration)
+{
+  this.configuration = configuration;
+}
+```
+{% endcode %}
+
+Zde si povšimněte zejména délky platnosti tokenu (v sekundách) a také dynamického klíče pro JWT - můžeme používat klíč z konfiguračního souboru, nebo tento, který se resetuje a nastaví vždy při restartu aplikace.
+
+Dále vložíme funkce hashující a ověřující heslo - s využitím knihovny jsou samopopisné:
+
+```csharp
+public string HashPassword(string password)
+{
+  string ret = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+  return ret;
+}
+
+public bool VerifyPassword(string password, string passwordHash)
+{
+  bool ret;
+  ret = BCrypt.Net.BCrypt.EnhancedVerify(password, passwordHash);
+  return ret;
+}
+```
+
+Nyní vložíme funkci pro vytvoření JWT tokenu:
+
+{% code lineNumbers="true" %}
+```csharp
+public string BuildJwtToken(AppUser appUser)
+{
+  // key from configuration:
+  // var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+  // ... or unique key per app start
+  var key = this.key;
+
+  Dictionary<string, object> roleClaims = appUser.Roles
+    .ToDictionary(
+      q => ClaimTypes.Role,
+      q => (object)q.ToUpper());
+
+  var tokenDescriptor = new SecurityTokenDescriptor
+  {
+    Subject = new ClaimsIdentity(new[]
+      {
+        new Claim(JwtRegisteredClaimNames.Sub, appUser.Email),
+        new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
+        new Claim(JwtRegisteredClaimNames.Aud, configuration["Jwt:Audience"]),
+        new Claim(JwtRegisteredClaimNames.Iss, configuration["Jwt:Issuer"]),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+      }),
+    Expires = DateTime.UtcNow.AddSeconds(TOKEN_EXPIRATION_IN_SECONDS),
+    SigningCredentials = new SigningCredentials
+      (new SymmetricSecurityKey(key),
+      SecurityAlgorithms.HmacSha512Signature),
+    Claims = roleClaims
+  };
+
+  var tokenHandler = new JwtSecurityTokenHandler();
+  var token = tokenHandler.CreateToken(tokenDescriptor);
+  var ret = tokenHandler.WriteToken(token);
+  return ret;
+}
+```
+{% endcode %}
+
+Nejdříve je zvolen klíč - buď z konfiguračního souboru, nebo dynamický (viz výše) - řádky 3-6. Následně vytvoříme pomocný slovník oprávnění uživatele obsahující role - řádky 8-11. Dále vytvoříme popisovač tokenu - řádky 13-28. Na řádcích 15-23 se definuje subjekt tokenu - jednotilvé položky oprávnění - řádky 17-21 - by měli být jasné. Na řádku 23 nastavíme expiraci tokenu, na řádku 24 nastavíme způsob podepsání JWT; finálně na řáku 27 přidáme do tokenu oprávnění rolí (viz řádek 8).
+
+Na konci token vytvoříme (řádky 30-31), a převedeme na řetězcovou reprezentaci (řádek 32), kterou vracíme jako výsledek.
+
+Následuje úplný kód třídy `SecurityService`:
+
+{% code title="Services \ SecurityService" lineNumbers="true" %}
+```csharp
+using JWTCoreDemo.Model;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Buffers.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO.IsolatedStorage;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace JWTCoreDemo.Services
+{
+  public class SecurityService
+  {
+    private const int TOKEN_EXPIRATION_IN_SECONDS = 30;
+    private readonly IConfiguration configuration;
+    private readonly byte[] key = RandomNumberGenerator.GetBytes(128);
+
+    public SecurityService([FromServices] IConfiguration configuration)
+    {
+      this.configuration = configuration;
+    }
+
+    public string BuildJwtToken(AppUser appUser)
+    {
+      // key from configuration:
+      // var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+      // ... or unique key per app start
+      var key = this.key;
+
+      Dictionary<string, object> roleClaims = appUser.Roles
+        .ToDictionary(
+          q => ClaimTypes.Role,
+          q => (object)q.ToUpper());
+
+      var tokenDescriptor = new SecurityTokenDescriptor
+      {
+        Subject = new ClaimsIdentity(new[]
+          {
+        new Claim(JwtRegisteredClaimNames.Sub, appUser.Email),
+        new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
+        new Claim(JwtRegisteredClaimNames.Aud, configuration["Jwt:Audience"]),
+        new Claim(JwtRegisteredClaimNames.Iss, configuration["Jwt:Issuer"]),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+      }),
+        Expires = DateTime.UtcNow.AddSeconds(TOKEN_EXPIRATION_IN_SECONDS),
+        SigningCredentials = new SigningCredentials
+          (new SymmetricSecurityKey(key),
+          SecurityAlgorithms.HmacSha512Signature),
+        Claims = roleClaims
+      };
+
+      var tokenHandler = new JwtSecurityTokenHandler();
+      var token = tokenHandler.CreateToken(tokenDescriptor);
+      var ret = tokenHandler.WriteToken(token);
+      return ret;
+    }
+
+    public bool VerifyPassword(string password, string passwordHash)
+    {
+      bool ret;
+      ret = BCrypt.Net.BCrypt.EnhancedVerify(password, passwordHash);
+      return ret;
+    }
+
+    public string HashPassword(string password)
+    {
+      string ret = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+      return ret;
+    }
+
+    // not required here, but an example how to generate salt using
+    // safe random number generator
+    //public string GenerateSalt()
+    //{
+    //  var bytes = RandomNumberGenerator.GetBytes(SALT_LENGTH);
+    //  string ret = System.Convert.ToBase64String(bytes);
+    //  return ret;
+    //}
+  }
+}
+```
+{% endcode %}
+
+Na konci kódu je přidána zakomentovaná nevyužitá funkce generující sůl pro hashování hesla; kód je pouze pro demonstraci, v našem projektu se nepoužije.
