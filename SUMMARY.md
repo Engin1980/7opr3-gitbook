@@ -9,7 +9,7 @@
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
   * [JWT - JSON Web Token](atentizace-a-autorizace/jwt-json-web-token.md)
   * [Implementace JWT v SpringBoot](atentizace-a-autorizace/implementace-jwt-v-springboot.md)
-  * [Implementace JWT v ASP.NET Core](atentizace-a-autorizace/implementace-jwt-v-asp.net-core/README.md)
+  * [Implementace JWT v ASP.NET Core](atentizace-a-autorizace/implementace-jwt-v-asp.net-core.md)
     * [Demonstrace použití BCrypt v .NET Core](atentizace-a-autorizace/implementace-jwt-v-asp.net-core/demonstrace-pouziti-bcrypt-v-.net-core.md)
     * [Demonstrace použití Argon2di v .NET Core](atentizace-a-autorizace/implementace-jwt-v-asp.net-core/demonstrace-pouziti-argon2di-v-.net-core.md)
   * [Relevantní literatura](atentizace-a-autorizace/relevantni-literatura.md)
