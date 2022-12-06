@@ -6,7 +6,7 @@ description: >-
 
 # Implementace JWT v ASP.NET Core
 
-Tato stránka vysvětluje implementaci zabezpečení přes JWT v back-end aplikaci postavené na ASP.NET Core. V této části se již předpokládá seznámení se základními pojmy, a to nejen z oblasti JWT, ale také obecných pojmů z oblasti back-end webových aplikací, zejména se zaměřením REST API, služeb (services) atp. Předpokládá se také znalost základních operací ve vývojovém prostředí Visual Studio (aktuálně použitá verze je Visual Studio 2022) a znalost práce s balíčkovacím systémem NuGet.
+cTato stránka vysvětluje implementaci zabezpečení přes JWT v back-end aplikaci postavené na ASP.NET Core. V této části se již předpokládá seznámení se základními pojmy, a to nejen z oblasti JWT, ale také obecných pojmů z oblasti back-end webových aplikací, zejména se zaměřením REST API, služeb (services) atp. Předpokládá se také znalost základních operací ve vývojovém prostředí Visual Studio (aktuálně použitá verze je Visual Studio 2022) a znalost práce s balíčkovacím systémem NuGet.
 
 Aplikace je vytvořena jako _minimal working example_, kde se bude vycházet z prázdné ASP.NET Core aplikace a kód nebude využívat ukládání dat do databáze pomocí Entity Frameworku.
 
@@ -127,4 +127,235 @@ Zajímavá je ještě definice chování JWT tokenu. Řádky 16-18 definují cho
 * zda kontrolujeme časová razítka JWT (**toto chceme také vždy**) - řádek 29.
 
 Kvůli možné odlišnosti času vydavatele a ověřovatele JWT knihovna automaticky přidává plovoucí časové okno (ve výchozím stavu 5 minut), ve kterém je token stále považován za platný, přestože jeho platnost vypršela. Toto okno můžeme nastavit sami (v našem případě jej pro snadnější testování rušíme) - řádek 30.
+
+### Vytvoření jednoduché modelové třídy uživatele AppUser
+
+Finálně do složky `Model`vytvoříme třídu `AppUser`, do které doplníme triviální kód třídy uživatele obsahující e-mail, heslo a role:
+
+{% code title="Model\AppUser.cs" lineNumbers="true" %}
+```csharp
+using System.Reflection.Metadata.Ecma335;
+
+namespace JWTCoreDemo.Model
+{
+  public class AppUser
+  {
+    public const string ADMIN_ROLE_NAME = "ADMIN";
+
+    public AppUser(string email, string passwordHash)
+    {
+      Email = email;
+      PasswordHash = passwordHash;
+    }
+
+    public string Email { get; private set; }
+    public string PasswordHash { get; private set; }
+    public List<string> Roles { get; private set; } = new();
+  }
+}
+```
+{% endcode %}
+
+{% hint style="info" %}
+Ve třídě uživatele není zmíněna _sůl_ použitá při hashování hesla. Je tomu tak proto, že pro hashování budeme využívat BCrypt, který sůl k heslu automaticky a ukládá sám. Pokud by se použil jiný přístup hashování, musela by třída uživatele obsahovat i tuto informaci.
+{% endhint %}
+
+## Implementace kontroleru a služeb
+
+Nejdříve implementujeme služby a následně jednoduché metody samotného kontroleru.
+
+### Pomocná třída výjimky - ServiceException
+
+Na začátku implementujeme jednoduchou pomocnou třídu pro správu výjimek vyhazovaných ze služeb. Do složky `Services` přidáme třídu `ServiceException`.
+
+{% code title="Services \ ServiceException.cs" lineNumbers="true" %}
+```csharp
+namespace JWTCoreDemo.Services
+{
+  public class ServiceException : Exception
+  {
+    public Type Service { get; private set; }
+    public ServiceException(Type service, string message, Exception? cause = null)
+      : base(message, cause)
+    {
+      this.Service = service ?? throw new ArgumentNullException();
+    }
+  }
+}
+```
+{% endcode %}
+
+Jednoduchá výjimka bere do konstruktoru informaci o službě, který ji vhodila, zprávě a případné vnitřní výjimce.
+
+{% hint style="info" %}
+První parametr konstruktoru odkazuje na obecný typ `Type`, kam však lze poslat libovolnou třídu a ne jen "službu". Celý mechanismus v projektu lze jednoduše vylepšti tím, že řekneme, že každá naše služba bude dědit z nějakého rozhraní (například `IAppService` a první parametr omezíme na instanci této třídy. Vyzkoušejte.
+{% endhint %}
+
+### Služba uživatele - AppUserService
+
+Protože kód služeb bude trošku složitější, bude představen po částech/metodách.
+
+Do projektu do složky `Services` nejdříve vytvoříme třídu `AppUserService`. Do třídy definujeme nejdříve dvě proměnné - jedna drží informaci o všech uživatelích a v našem případě nahrazuje chování perzistence (například databáze), druhá bude obsahovat injektovaný (přes Dependency Inejction) odkaz na naši druhou službu `SecurityService`- její instance se do objektu služby dostane přes konstruktor:
+
+```csharp
+private readonly List<AppUser> inner = new();
+private readonly SecurityService securityService;
+
+public AppUserService([FromServices] SecurityService securityService)
+{
+  this.securityService = securityService;
+}
+```
+
+Do kódu přidáme dvě pomocné soukromé funkce, které budeme využívat dále - jedna kontroluje validitu parametru, druhá je pomocná funkce pro vytvoření výjimky:
+
+{% code lineNumbers="true" %}
+```csharp
+private static void EnsureNotNull(string value, string parameterName)
+{
+  if (value == null)
+    throw CreateException($"Parameter {parameterName} cannot be null.");
+}
+
+private static ServiceException CreateException(
+  string message, Exception? innerException = null) =>
+  new(typeof(AppUserService), message, innerException);
+```
+{% endcode %}
+
+Následně vytvoříme metodu `Create`, která vytvoří nového uživatele podle parametrů:
+
+{% code lineNumbers="true" %}
+```csharp
+public AppUser Create(string email, string password, bool isAdmin)
+{
+  EnsureNotNull(email, nameof(email));
+  EnsureNotNull(password, nameof(password));
+
+  email = email.ToLower();
+
+  if (inner.Any(q => q.Email == email))
+    throw CreateException($"Email {email} already exists.", null);
+
+  string hash = this.securityService.HashPassword(password);
+
+  AppUser ret = new(email, hash);
+  if (isAdmin) ret.Roles.Add(AppUser.ADMIN_ROLE_NAME);
+  this.inner.Add(ret);
+
+  return ret;
+}
+```
+{% endcode %}
+
+Funkce nejdříve zkontroluje parametry (řádky 3-4), následně upraví e-mail (řádek 6). Potom zkusí zjistit, zda již uživatel s e-mailem existuje, případně vyhodí výjimku (řádky 8-9). Dále se s využitím bezpečnostní služby provede hash hesla (řádek 11), vtvoří se nový uživatel, přidá se do kolekce a vloží se mu role admina, je-li třeba (řádky 12-15). Finálně se uživatel vrátí (řádek 18).
+
+Další primitivní funkce pro vrácení všech uživatelů nepotřebuje komentář:
+
+```csharp
+public List<AppUser> GetUsers()
+{
+  return this.inner.ToList();
+}
+```
+
+Následuje funkce vracející uživatele podle přihlašovacích údajů:
+
+{% code lineNumbers="true" %}
+```csharp
+public AppUser GetUserByCredentials(string email, string password)
+{
+  EnsureNotNull(email, nameof(email));
+  EnsureNotNull(password, nameof(password));
+
+  AppUser appUser = inner.FirstOrDefault(q => q.Email == email.ToLower())
+    ?? throw CreateException($"Email {email} does not exist.");
+
+  if (!this.securityService.VerifyPassword(password, appUser.PasswordHash))
+    throw CreateException($"Credentials are not valid.");
+
+  return appUser;
+
+```
+{% endcode %}
+
+Funkce na začátku nejdříve zkontroluje parametry (řádky 3-4). Následně se pokusí získat uživatele podle e-mailu, jinak vrací výjimku (řádky 6-7). Dále se pokusí uživatele autentizovat podle jména a hesla a s využitím bezpečnostní služby (řádky 9-10) a v případě úspěchu jej vrátí (řádek 12).
+
+Nakonec kompletní kód třídy:
+
+{% code title="" lineNumbers="true" %}
+```csharp
+using JWTCoreDemo.Model;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JWTCoreDemo.Services
+{
+  public class AppUserService
+  {
+    private readonly List<AppUser> inner = new();
+    private readonly SecurityService securityService;
+
+    public AppUserService([FromServices] SecurityService securityService)
+    {
+      this.securityService = securityService;
+    }
+
+    public AppUser Create(string email, string password, bool isAdmin)
+    {
+      EnsureNotNull(email, nameof(email));
+      EnsureNotNull(password, nameof(password));
+
+      email = email.ToLower();
+
+      if (inner.Any(q => q.Email == email))
+        throw CreateException($"Email {email} already exists.", null);
+
+      string hash = this.securityService.HashPassword(password);
+
+      AppUser ret = new(email, hash);
+      if (isAdmin) ret.Roles.Add(AppUser.ADMIN_ROLE_NAME);
+      this.inner.Add(ret);
+
+      return ret;
+    }
+
+    public List<AppUser> GetUsers()
+    {
+      return this.inner.ToList();
+    }
+
+    public AppUser GetUserByCredentials(string email, string password)
+    {
+      EnsureNotNull(email, nameof(email));
+      EnsureNotNull(password, nameof(password));
+
+      AppUser appUser = inner.FirstOrDefault(q => q.Email == email.ToLower())
+        ?? throw CreateException($"Email {email} does not exist.");
+
+      if (!this.securityService.VerifyPassword(password, appUser.PasswordHash))
+        throw CreateException($"Credentials are not valid.");
+
+      return appUser;
+    }
+
+    private static void EnsureNotNull(string value, string parameterName)
+    {
+      if (value == null)
+        throw CreateException($"Parameter {parameterName} cannot be null.");
+    }
+
+    private static ServiceException CreateException(string message, Exception? innerException = null) =>
+      new(typeof(AppUserService), message, innerException);
+  }
+}
+```
+{% endcode %}
+
+### Bezpečnostní služba - SecurityService
+
+Bezpečnosti služba se stará o správu hashování, hesla a vytvoření JWT.
+
+Do projektu do složky `Services`vložíme třídu `SecurityService` a opět její kód představíme po částech.
+
+Nejdříve úvodní deklarace a konstruktor:
 
