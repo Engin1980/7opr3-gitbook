@@ -76,7 +76,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<SecurityService>();
+SecurityService securityService = new(builder.Configuration);
+builder.Services.AddSingleton<SecurityService>(securityService);
 builder.Services.AddSingleton<AppUserService>();
 
 builder.Services.AddControllers();
@@ -89,7 +90,10 @@ builder.Services.AddAuthentication(opt =>
   })
   .AddJwtBearer(opt =>
   {
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]));
+    // key from config
+    //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]));
+    // or random key each app-start
+    var key = new SymmetricSecurityKey(securityService.Key);
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
       IssuerSigningKey = key,
@@ -114,19 +118,20 @@ app.Run();
 V kódu:
 
 * definujeme konfigurační službu (řádek 8),
-* definujeme naše dvě předvytvořené služby. Služba `SecurityService`bude definována jako _singleton_, protože ji chceme jednu pro celou aplikaci. Služba `AppUserService` by v běžném projektu byla definována nejspíše jako _transientní_, protože chceme, aby se vytvářela vždy pro každý požadavek separátně. Protože však v našem projektu bude pro zjednoušení také udržovat data (v reálném projektu by tomu tak pravděpodobně **nikdy** nebylo), zavedeme si ji také jako singleton.
-* zavedeme služby pro controllery (řádek 12),
-* zavedem služby pro autorizaci (řádek 13) a autentifikaci spolu s definicí JWT (řádky 14-32) - bude vysvětleno podrobněji dále,
-* následně se aplikace sestaví (řádek 34) a připojí se vrstvy: vrstva směrování, vrstva autentizace, vrstva autorizace a vrstva mapující end-pointy kontrolerů aplikací (řádky 36-39);
-* nakonec se aplikace spustí (řádek 40).
+* definujeme naše dvě předvytvořené služby. Služba `SecurityService`bude definována jako _singleton_, protože ji chceme jednu pro celou aplikaci. Služba `AppUserService` by v běžném projektu byla definována nejspíše jako _transientní_, protože chceme, aby se vytvářela vždy pro každý požadavek separátně. Protože však v našem projektu bude pro zjednoušení také udržovat data (v reálném projektu by tomu tak pravděpodobně **nikdy** nebylo), zavedeme si ji také jako singleton. Protože instanci služby `SecurityService`budeme ihned dále potřebovat, nenecháme ji vytvořit automaticky (jako na řádku 8), ale uděláme si nejdříve instanci a tu předáme správci služeb (řádky 9-10).
+* zavedeme služby pro controllery (řádek 13),
+* zavedem služby pro autorizaci (řádek 14) a autentifikaci spolu s definicí JWT (řádky 15-37) - bude vysvětleno podrobněji dále,
+* následně se aplikace sestaví (řádek 38) a připojí se vrstvy: vrstva směrování, vrstva autentizace, vrstva autorizace a vrstva mapující end-pointy kontrolerů aplikací (řádky 40-43);
+* nakonec se aplikace spustí (řádek 44).
 
-Zajímavá je ještě definice chování JWT tokenu. Řádky 16-18 definují chování schémat (nebude vysvětleno dále, ponecháme viz nastavení). 5ádky 25-30 definují, co vše a jak se bude v JWT validovat:
+Zajímavá je ještě definice chování JWT tokenu. Řádky 17-19 definují chování schémat (nebude vysvětleno dále, ponecháme viz nastavení). 5ádky 23-34 definují, co vše a jak se bude v JWT validovat:
 
-* klíč JWT (řádek 25) a zda kontrolujeme validitu klíče (**toto chceme vždy**) - řádek 28,
-* zda kontrolujeme validitu vydavate a příjemce JWT (dle vlastní volby; v našem případě nepoužíváme, ale všimněte si, že kód v JWT (dále) i v konfiguračním souboru je na to připraven) - řádky 26-27,
-* zda kontrolujeme časová razítka JWT (**toto chceme také vždy**) - řádek 29.
+* zda chceme použít klíč z konfiguračního souboru nebo dynamicky generovaný (řádky 23-26),
+* klíč JWT (řádek 29) a zda kontrolujeme validitu klíče (**toto chceme vždy**) - řádek 32),
+* zda kontrolujeme validitu vydavate a příjemce JWT (dle vlastní volby; v našem případě nepoužíváme, ale všimněte si, že kód v JWT (dále) i v konfiguračním souboru je na to připraven) - řádky 30-31,
+* zda kontrolujeme časová razítka JWT (**toto chceme také vždy**) - řádek 33.
 
-Kvůli možné odlišnosti času vydavatele a ověřovatele JWT knihovna automaticky přidává plovoucí časové okno (ve výchozím stavu 5 minut), ve kterém je token stále považován za platný, přestože jeho platnost vypršela. Toto okno můžeme nastavit sami (v našem případě jej pro snadnější testování rušíme) - řádek 30.
+Kvůli možné odlišnosti času vydavatele a ověřovatele JWT knihovna automaticky přidává plovoucí časové okno (ve výchozím stavu 5 minut), ve kterém je token stále považován za platný, přestože jeho platnost vypršela. Toto okno můžeme nastavit sami (v našem případě jej pro snadnější testování rušíme) - řádek 34.
 
 ### Vytvoření jednoduché modelové třídy uživatele AppUser
 
@@ -363,7 +368,7 @@ Nejdříve úvodní deklarace a konstruktor:
 ```csharp
 private const int TOKEN_EXPIRATION_IN_SECONDS = 30;
 private readonly IConfiguration configuration;
-private readonly byte[] key = RandomNumberGenerator.GetBytes(128);
+public byte[] Key = { get; } = RandomNumberGenerator.GetBytes(128);
 
 public SecurityService([FromServices] IConfiguration configuration)
 {
@@ -400,7 +405,7 @@ public string BuildJwtToken(AppUser appUser)
   // key from configuration:
   // var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
   // ... or unique key per app start
-  var key = this.key;
+  var key = this.Key;
 
   Dictionary<string, object> roleClaims = appUser.Roles
     .ToDictionary(
@@ -454,9 +459,9 @@ namespace JWTCoreDemo.Services
 {
   public class SecurityService
   {
-    private const int TOKEN_EXPIRATION_IN_SECONDS = 30;
+    private const int TOKEN_EXPIRATION_IN_SECONDS = 600;
     private readonly IConfiguration configuration;
-    private readonly byte[] key = RandomNumberGenerator.GetBytes(128);
+    public byte[] Key { get; } = RandomNumberGenerator.GetBytes(128);
 
     public SecurityService([FromServices] IConfiguration configuration)
     {
@@ -466,9 +471,9 @@ namespace JWTCoreDemo.Services
     public string BuildJwtToken(AppUser appUser)
     {
       // key from configuration:
-      // var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+      //var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
       // ... or unique key per app start
-      var key = this.key;
+      var key = this.Key;
 
       Dictionary<string, object> roleClaims = appUser.Roles
         .ToDictionary(
@@ -513,7 +518,7 @@ namespace JWTCoreDemo.Services
 
     // not required here, but an example how to generate salt using
     // safe random number generator
-    //public string GenerateSalt()
+    //internal string GenerateSalt()
     //{
     //  var bytes = RandomNumberGenerator.GetBytes(SALT_LENGTH);
     //  string ret = System.Convert.ToBase64String(bytes);
@@ -525,3 +530,242 @@ namespace JWTCoreDemo.Services
 {% endcode %}
 
 Na konci kódu je přidána zakomentovaná nevyužitá funkce generující sůl pro hashování hesla; kód je pouze pro demonstraci, v našem projektu se nepoužije.
+
+## Implementace kontroleru - UserController
+
+Finálně provedeme implementac kontroleru.
+
+Čístý REST API kontroler v ASP.NET Core vytvoříme jako potomka třídy `ControllerBase`a přidáním anotace `[ApiController]`. Kontroler necháme ihned chránit autorizaci a nastavíme mu základní cestu na `/api/user`. Do kontroleru také necháme vložit naše služby.
+
+{% code title="Controllers \ UserController.cs (skeleton)" lineNumbers="true" %}
+```csharp
+using JWTCoreDemo.Model;
+using JWTCoreDemo.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JWTCoreDemo.Controllers
+{
+  [Route("api/user")]
+  [Authorize]
+  [ApiController]
+  public class UserController : ControllerBase
+  {
+    private readonly AppUserService appUserService;
+    private readonly SecurityService securityService;
+
+    public UserController(
+      [FromServices] AppUserService appUserService,
+      [FromServices] SecurityService securityService)
+    {
+      this.appUserService = appUserService;
+      this.securityService = securityService;
+    }    
+  }
+}
+
+```
+{% endcode %}
+
+Nyní si definujme end-pointy kontroleru:
+
+| Metoda | Cesta            | Chráněný | Akce                            |
+| ------ | ---------------- | -------- | ------------------------------- |
+| GET    | /api/user        | Ne       | Vrátí všechna uživatelská jména |
+| PUT    | /api/user        | Ne       | Vytvoří nového uživatele        |
+| POST   | /api/user        | Ne       | Přihlásí uživatele              |
+| GET    | /api/user/emails | Ano      | Vrátí všechny e-maily           |
+| GET    | /api/user/all    | Ano+Role | Vrátí všechno                   |
+
+Začneme vrácením všech uživatelů. End-point není chráněný a komukoliv vrátí jmena (začátky e-mailových adres):
+
+{% code lineNumbers="true" %}
+```csharp
+[HttpGet]
+[AllowAnonymous]
+public IActionResult GetUserNames()
+{
+  List<string> ret = appUserService.GetUsers()
+    .Select(q => q.Email[..q.Email.IndexOf("@")])
+    .ToList();
+  return Ok(ret);
+}
+```
+{% endcode %}
+
+Přidáme získání emailů. End-point už je chráněný (viz atribut) a vrátí všechny e-mailové adresy:
+
+{% code lineNumbers="true" %}
+```csharp
+[HttpGet("emails")]
+public IActionResult GetUserEmails()
+{
+  List<string> ret = appUserService.GetUsers()
+    .Select(q => q.Email)
+    .ToList();
+  return Ok(ret);
+}
+```
+{% endcode %}
+
+Konečně přidáme získání celého infa o uživatelích; end-point je chráněný i rolí:
+
+{% code lineNumbers="true" %}
+```csharp
+[HttpGet("all")]
+[Authorize(Roles = AppUser.ADMIN_ROLE_NAME)]
+public IActionResult GetAll()
+{
+  List<AppUser> ret = appUserService.GetUsers();
+  return Ok(ret);
+}
+```
+{% endcode %}
+
+Jednoduchým end-pointem je také vytvoření uživatele:
+
+{% code lineNumbers="true" %}
+```csharp
+[HttpPut]
+[AllowAnonymous]
+public IActionResult Create(string email, string password, bool isAdmin)
+{
+  try
+  {
+    this.appUserService.Create(email, password, isAdmin);
+  }
+  catch (Exception ex)
+  {
+    return BadRequest(ex.Message);
+  }
+  return Ok();
+}
+```
+{% endcode %}
+
+Posledním end-pointem je přihlášení uživatele. S využitím služeb je kód také velmi jednoduchý:
+
+{% code lineNumbers="true" %}
+```csharp
+[HttpPost]
+[AllowAnonymous]
+public IActionResult Login(string email, string password)
+{
+  AppUser appUser;
+  try
+  {
+    appUser = this.appUserService.GetUserByCredentials(email, password);
+  }
+  catch (Exception ex)
+  {
+    return BadRequest(ex.Message);
+  }
+
+  string token = securityService.BuildJwtToken(appUser);
+  return Ok(token);
+}
+```
+{% endcode %}
+
+Nakonec shrnutí celé třídy kontroleru:
+
+{% code title="Controllers \ UserController.cs" lineNumbers="true" %}
+```csharp
+using JWTCoreDemo.Model;
+using JWTCoreDemo.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JWTCoreDemo.Controllers
+{
+  [Route("api/user")]
+  [Authorize]
+  [ApiController]
+  public class UserController : ControllerBase
+  {
+    private readonly AppUserService appUserService;
+    private readonly SecurityService securityService;
+
+    public UserController(
+      [FromServices] AppUserService appUserService,
+      [FromServices] SecurityService securityService)
+    {
+      this.appUserService = appUserService;
+      this.securityService = securityService;
+    }
+
+    [HttpPut]
+    [AllowAnonymous]
+    public IActionResult Create(string email, string password, bool isAdmin)
+    {
+      try
+      {
+        this.appUserService.Create(email, password, isAdmin);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(ex.Message);
+      }
+      return Ok();
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult GetUserNames()
+    {
+      List<string> ret = appUserService.GetUsers()
+        .Select(q => q.Email[..q.Email.IndexOf("@")])
+        .ToList();
+      return Ok(ret);
+    }
+
+    [HttpGet("emails")]
+    public IActionResult GetUserEmails()
+    {
+      List<string> ret = appUserService.GetUsers()
+        .Select(q => q.Email)
+        .ToList();
+      return Ok(ret);
+    }
+
+    [HttpGet("all")]
+    [Authorize(Roles = AppUser.ADMIN_ROLE_NAME)]
+    public IActionResult GetAll()
+    {
+      List<AppUser> ret = appUserService.GetUsers();
+      return Ok(ret);
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public IActionResult Login(string email, string password)
+    {
+      AppUser appUser;
+      try
+      {
+        appUser = this.appUserService.GetUserByCredentials(email, password);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(ex.Message);
+      }
+
+      string token = securityService.BuildJwtToken(appUser);
+      return Ok(token);
+    }
+  }
+}
+
+```
+{% endcode %}
+
+## Shrnutí
+
+Tím je řešení hotovo. Můžeme jej vyzkoušet přes klienta PostMan, či libovolnou jinou aplikaci.
+
+
+
+
+
+
+
