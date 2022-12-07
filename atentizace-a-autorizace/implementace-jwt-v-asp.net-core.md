@@ -49,7 +49,7 @@ Podporu JWT do .NET zajistíme přidáním knihovny `Microsoft.AspNetCore.Authen
 
 Zároveň budeme hashování hesla uživatele provádět přes BCrypt - opět přes NuGet přidáme podporu `BCrypt.Net-Next`(aktuálně ve verzi 4.0.3).
 
-### Definice skeletonu služeb I
+### Definice skeletonu služeb
 
 Do projektu přidáme zatím prázdné služby, které budeme v kódu využívat. Ve složce `Services` vytvoříme dva soubory:
 
