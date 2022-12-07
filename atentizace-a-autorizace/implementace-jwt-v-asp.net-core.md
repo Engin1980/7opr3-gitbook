@@ -6,7 +6,9 @@ description: >-
 
 # Implementace JWT v ASP.NET Core
 
-cTato stránka vysvětluje implementaci zabezpečení přes JWT v back-end aplikaci postavené na ASP.NET Core. V této části se již předpokládá seznámení se základními pojmy, a to nejen z oblasti JWT, ale také obecných pojmů z oblasti back-end webových aplikací, zejména se zaměřením REST API, služeb (services) atp. Předpokládá se také znalost základních operací ve vývojovém prostředí Visual Studio (aktuálně použitá verze je Visual Studio 2022) a znalost práce s balíčkovacím systémem NuGet.
+{% embed url="https://github.com/Engin1980/7opr3-net-jwtTokenDemo" %}
+
+Tato stránka vysvětluje implementaci zabezpečení přes JWT v back-end aplikaci postavené na ASP.NET Core. V této části se již předpokládá seznámení se základními pojmy, a to nejen z oblasti JWT, ale také obecných pojmů z oblasti back-end webových aplikací, zejména se zaměřením REST API, služeb (services) atp. Předpokládá se také znalost základních operací ve vývojovém prostředí Visual Studio (aktuálně použitá verze je Visual Studio 2022) a znalost práce s balíčkovacím systémem NuGet.
 
 Aplikace je vytvořena jako _minimal working example_, kde se bude vycházet z prázdné ASP.NET Core aplikace a kód nebude využívat ukládání dat do databáze pomocí Entity Frameworku.
 
