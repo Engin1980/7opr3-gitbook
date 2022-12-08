@@ -8,7 +8,7 @@ Zdrojové kódy
 
 ## Obecný přehled zabezpečení ve SpringBoot
 
-SpringBoot, jakožto komplexní nástroj, má celou svou vlastní infrastukturu na řešení zabezpečení - autentizace a autorizace - webové aplikace. Interně provozuje vlastní kontext (uvnitř tzv. **SpringBoot Security**), ve kterém má uschované informace o přihlášeném uživateli. Díky tomu je implementace výchozího zabezpečení ve SpringBoot velmi jednoduchá a zároveň mechanismus nabízí velmi široké možnosti přizpůsobení a rozšíření. Na druhou stranu, i jednoduché vlastní řešení zabezpečení (jako v našem případě přidání podpory pro JWT) není bohužel úplně triviální a SpringBoot interně žádnou implementaci pro podporu JWT nenabízí.
+SpringBoot, jakožto komplexní nástroj, má celou svou vlastní infrastrukturu na řešení zabezpečení - autentizace a autorizace - webové aplikace. Interně provozuje vlastní kontext (uvnitř tzv. **SpringBoot Security**), ve kterém má uschované informace o přihlášeném uživateli. Díky tomu je implementace výchozího zabezpečení ve SpringBoot velmi jednoduchá a zároveň mechanismus nabízí velmi široké možnosti přizpůsobení a rozšíření. Na druhou stranu, i jednoduché vlastní řešení zabezpečení (jako v našem případě přidání podpory pro JWT) není bohužel úplně triviální a SpringBoot interně žádnou implementaci pro podporu JWT nenabízí.
 
 V obecném mechanismu se nachází větší množství objektů a pro správnou implementaci zabezpečení je bohužel nutné alespoň jejich základům a principu zabezpečení porozumět.
 
@@ -534,7 +534,8 @@ Do třídy `UserController` nejdříve potřebujeme doplnit přes DI dva objekty
   public ResponseEntity<String> login(String email, String password){
     Authentication authentication;
     try {
-      authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+      authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(email, password));
     } catch (DisabledException | BadCredentialsException e) {
       return ResponseEntity.badRequest().body("Invalid credentials.");
     }
