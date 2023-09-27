@@ -10,6 +10,8 @@
     * [Vytváření API Endpointů](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/vytvareni-api-endpointu.md)
     * [Testování endpointů](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/testovani-endpointu.md)
     * [Správa chyb při práci s endpointy](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/sprava-chyb-pri-praci-s-endpointy.md)
+    * [Swagger - rychlý pohled na endpointy](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/swagger-rychly-pohled-na-endpointy.md)
+  * [Práce s JPA a databází](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi.md)
   * [Relevantní literatura](springboot-zakladni-predstaveni/relevantni-literatura.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)

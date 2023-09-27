@@ -4,3 +4,8 @@ Správa chyb REST: [https://www.javainterviewpoint.com/spring-boot-exception-han
 
 Dont expose JPA entities: [https://thorben-janssen.com/dont-expose-entities-in-api/](https://thorben-janssen.com/dont-expose-entities-in-api/)
 
+## Co je SpringBoot
+
+
+
+## Základní pojmy
