@@ -10,7 +10,7 @@ _Spring Initializr_ je dostupný i z jiných vývojových prostředí, nebo př�
 Pro funkcionalitu je třeba mít IntelliJ Idea ve verzi Ultimate ([https://www.jetbrains.com/idea/download/?section=windows](https://www.jetbrains.com/idea/download/?section=windows)).
 {% endhint %}
 
-Z nabídky _File_ se zvolí položka _New Project_. Z jeho nabídky se vybere položka _Spring Initializr_. Dále se vloží název projektu (bude se realizovat triviální projekt připomínek, _event-reminder_), vybere se jazyk (Java), typ projektu (Maven), JDK (zde openjdk-19) a verziy Javy (zde 17). Nakonec se zvolí balení do Jar balíčku. Volba se potvrdí tlačítkem _Next_.
+Z nabídky _File_ se zvolí položka _New Project_. Z jeho nabídky se vybere položka _Spring Initializr_. Dále se vloží název projektu (bude se realizovat triviální projekt připomínek, _event-reminder_), vybere se jazyk (Java), typ projektu (Maven), JDK (>= openjdk-18) a verzi Javy (>= 17). Nakonec se zvolí balení do Jar balíčku. Volba se potvrdí tlačítkem _Next_.
 
 
 
@@ -31,3 +31,42 @@ V novém projektu jsou pro nás aktuálně zajímavé ve složce projektu zákla
 * /src/main/java/.../EventReminderApplication - je vstupní bod do aplikace, kde se nachází metoda `main()`.
 * /src/main/resource/application.properties - je základní konfigurační soubor, který budeme využívat pro zadávání některých nastavení,
 * pom.xml - soubor s Maven konfigurací; bude vysvětleno později, zjednodušeně se zde mj. definují závislosti na knihovnách, které se budou v projektu využívat.
+
+## Dočasné potlačení zabezpečení SpringBoot
+
+{% hint style="danger" %}
+Pokud jste při vytváření projektu vložili i dependenci na Security -> Spring Security, SpringBoot automaticky v projektu nastaví základní zabezpečení. Toto zabezpečení mj. způsobí, že bez **přihlášení se nebude moci na vytvářené endpointy dostat**.\
+\
+Pokud jste tuto závislost do projektu nevložili, můžete/musíte tuto sekci přeskočit.
+{% endhint %}
+
+Pro vyřešení problému se zabezpečením dočasně potlačíme kontrolní mechanismy SpringBoot - bez podrobnějšího vysvětlení. Do projektu, do složky /src/mainjava/{název\_balíčku}/ vložte novou třídu `SecurityConfiguration` (měla by se objevit na stejné úrovni jako váš hlavní spouštěcí soubor `EventReminderApplication.java`. Do třídy vložte následující kód:
+
+{% code title="SecurityConfiguration.java" lineNumbers="true" %}
+```java
+// Some codepackage cz.osu.kip.eventReminder;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(request -> request.anyRequest().permitAll());
+
+    return http.build();
+  }
+}
+```
+{% endcode %}
