@@ -571,13 +571,7 @@ namespace JWTCoreDemo.Controllers
 
 Nyní si definujme end-pointy kontroleru:
 
-| Metoda | Cesta            | Chráněný | Akce                            |
-| ------ | ---------------- | -------- | ------------------------------- |
-| GET    | /api/user        | Ne       | Vrátí všechna uživatelská jména |
-| PUT    | /api/user        | Ne       | Vytvoří nového uživatele        |
-| POST   | /api/user        | Ne       | Přihlásí uživatele              |
-| GET    | /api/user/emails | Ano      | Vrátí všechny e-maily           |
-| GET    | /api/user/all    | Ano+Role | Vrátí všechno                   |
+<table><thead><tr><th width="107">Metoda</th><th width="175">Cesta</th><th width="157">Chráněný</th><th>Akce</th></tr></thead><tbody><tr><td>GET</td><td>/api/user</td><td>Ne</td><td>Vrátí všechna uživatelská jména</td></tr><tr><td>PUT</td><td>/api/user</td><td>Ne</td><td>Vytvoří nového uživatele</td></tr><tr><td>POST</td><td>/api/user</td><td>Ne</td><td>Přihlásí uživatele</td></tr><tr><td>GET</td><td>/api/user/emails</td><td>Ano</td><td>Vrátí všechny e-maily</td></tr><tr><td>GET</td><td>/api/user/all</td><td>Ano+Role</td><td>Vrátí všechno</td></tr></tbody></table>
 
 Začneme vrácením všech uživatelů. End-point není chráněný a komukoliv vrátí jmena (začátky e-mailových adres):
 
