@@ -28,6 +28,8 @@ Do těla požadavku vložíme text přidávané položky:
 
 Vzhled výsledného požadavku:
 
+<figure><img src="../.gitbook/assets/jwtRegistrace.png" alt=""><figcaption></figcaption></figure>
+
 Po odeslání požadavku vidíme dole v okně výsledek - zelený kód odpovědi `200 OK` a v textovém okně hodnotu přiřazeného ID. Při opakovaném volání požadavku se bude ID zvyšovat.
 
 ## Test vrácení události podle ID
