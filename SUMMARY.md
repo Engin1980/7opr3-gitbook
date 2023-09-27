@@ -6,7 +6,7 @@
   * [Základní práce s komponentami - Projekt 'RGB View'](angular-zakladni-predstaveni/zakladni-prace-s-komponentami-projekt-rgb-view.md)
 * [SpringBoot - základní představení](springboot-zakladni-predstaveni.md)
   * [Vytvoření projektu pro REST API](springboot-zakladni-predstaveni/vytvoreni-projektu-pro-rest-api.md)
-  * [Zachycení a vrácení chyby z REST API](springboot-zakladni-predstaveni/zachyceni-a-vraceni-chyby-z-rest-api.md)
+  * [Vytváření API Endpointů](springboot-zakladni-predstaveni/vytvareni-api-endpointu.md)
   * [Relevantní literatura](springboot-zakladni-predstaveni/relevantni-literatura.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
