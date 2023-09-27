@@ -1,4 +1,4 @@
-# Vytváření API Endpointů II
+# Vytváření API Endpointů
 
 ## Vytvoření pomocných tříd
 
@@ -46,10 +46,10 @@ public class EventService {
   private final List<Event> events = new ArrayList<>();
 
   public int create(String title, LocalDateTime dateTime) {
-    int id = this.events.stream()
+    int id = 1 + this.events.stream()
             .mapToInt(q -> q.getEventId())
             .max()
-            .orElse(1);
+            .orElse(0);
     Event event = new Event(id, title, dateTime);
     this.events.add(event);
     return id;
@@ -113,6 +113,13 @@ public class EventController {
   @Autowired private EventService eventService;
   
 }
+
+@Getter
+@Setter
+class EventData {
+  private String title;
+  private LocalDateTime dateTime;
+}
 ```
 {% endcode %}
 
@@ -121,6 +128,7 @@ Už v tomto kódu si lze povšimnout dvou základních zajímavostí:
 * Anotace `@RestController` - tato anotace způsobí, že SpringBoot bude třídu chápat jako REST kontroler. Projde její metody a ty z nich, které budou vhodně označené (uděláme dále) vystaví ven z aplikace jako vstupní REST API.
 * Anotace `@RequestMapping("/event")` specifikuje pro celý kontroler (a jeho endpointy) výchozí mapovací cestu. Pro server `www.test.cz` proto tento kontroler a jeho endpointy budou dostupné na cestě `www.test.cz/event`.
 * Proměnná třídy `eventService` s anotací `@Autowired` - tato anotace je navázána na tzv. Dependency Injection (DI). DI je technika, kdy programátor sám nevytváří instance tříd, ale tyto instance jsou mu samy vkládány do připravených proměnných k použití. Výše jsme vytvořili novou třídu `EventService`, ale nikde z ní nevytváříme instanci (nikde nemáme a ani nebudeme mít kód typu `new EventService()`). Místo toho jsme proměnnou označili anotací `@Autowired`, a to způsobí, že SpringBoot sám vytvoří instance požadované třídy a vloží ji do námi připravené proměnné. My tuto instanci pak už jen budeme používat.
+* Nakonec si připravíme pomocnou třídu, pomocí které budeme předávat data při vytváření nové událost do endpointu - nazveme ji `EventData`.
 
 {% hint style="info" %}
 Problematika DI ve SpringBoot je komplexnější. Zájemce o bližší studium odkazujeme například na [https://www.baeldung.com/spring-dependency-injection](https://www.baeldung.com/spring-dependency-injection).
@@ -130,16 +138,18 @@ Problematika DI ve SpringBoot je komplexnější. Zájemce o bližší studium o
 DI vkládá instance služeb s ohledem na jejich tzv. _scope_. Ten říká, zda má SpringBoot při požadavku na DI vkládat stejnou instanci, jakou využil už dříve, nebo zda má vytvářet instance nové. Ve výchozím nastavení jsou všechny služby (i dále uvedené typy vkládaných DI objektů) chápány jako Singletony - vytvoří se jednou a používají se pro běh celé aplikace. Toto chování lze ale v případě potřeby změnit. Pro bližší zájemce viz [https://www.baeldung.com/spring-bean-scopes](https://www.baeldung.com/spring-bean-scopes).
 {% endhint %}
 
+{% hint style="info" %}
+Třídám, která předávají data mezi endpointem a jejich volajícími, se typicky říká _Data Transfer Object_ a nezřídka mají u svého názvu postfix `DTO`.&#x20;
+{% endhint %}
+
 #### Endpoint pro vytvoření nové události
 
 Nyní vytvoříme endpoint pro vytvoření nové události:
 
 ```java
   @PostMapping
-  public int create(
-      @RequestBody String title, 
-      @RequestBody LocalDateTime dateTime){
-    int ret = this.eventService.create(title, dateTime);
+  public int create(@RequestBody EventData data){
+    int ret = this.eventService.create(data.getTitle(), data.getDateTime());
     return ret;
   }
 ```
@@ -169,13 +179,13 @@ Pro získání informace vložíme do kontroleru novou funkci:
 
 ```java
   @GetMapping
-  public Event getById(int eventId){
+  public Event getById(@RequestParam int eventId){
     Event ret = this.eventService.getById(eventId).orElse(null);
     return ret;
   }
 ```
 
-Tentokrát se jedná o mapování přes HTTP-GET - `@GetMapping`, a očekává se jako vstup id požadované události.
+Tentokrát se jedná o mapování přes HTTP-GET - `@GetMapping`, a očekává se jako vstup id požadované události. Pro zajímavost jsme zde zvolili, že data se nebudou předávat přes JSON v těle požadavku, ale jako parametr požadavku (viz dále v testování požadavku).
 
 {% hint style="info" %}
 V kódu neřešíme chybový stav, kdy objekt dle ID nebyl nazelen - zatím vracíme jednoduše `null`. V sekci věnované práci s chybami v rámci endpointů bude tento problém vyřešen.
@@ -194,3 +204,55 @@ Pro získání všech událostí vložíme do kontroleru novou funkci:
 ```
 
 I tato funkce je přímočará. Jedinou zajímavostí je uvedení složitější varianty anotace `@GetMapping("/list")`. Už výše uvedená funkce `getById(...)` používá HTTP-GET na adrese kontroleru `/event`. Kdybychom definovaly druhou funkci jako endpoint na HTTP-GET, SpringBoot by při požadavku na `.../event` nevěděl, kterou z nich má vybrat. Proto musíme druhý HTTP-GET endpoint odlišit jinou url (viz výše tabulka endpointů) na `/event/list`. Část `/event` je již uvedena jako výchozí cesta u celého kontroleru (viz anotaci u názvu třídy), část `/list` je uvedena u samotné metody.
+
+#### Shrnutí kódu kontroleru
+
+{% code title="EventController.java" lineNumbers="true" %}
+```java
+package cz.osu.kip.eventReminder.controllers;
+
+import cz.osu.kip.eventReminder.model.Event;
+import cz.osu.kip.eventReminder.services.EventService;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/event")
+public class EventController {
+
+  @Autowired
+  private EventService eventService;
+
+  @PostMapping
+  public int create(@RequestBody EventData data) {
+    int ret = this.eventService.create(data.getTitle(), data.getDateTime());
+    return ret;
+  }
+
+  @GetMapping
+  public Event getById(@RequestParam int eventId) {
+    Event ret = this.eventService.getById(eventId).orElse(null);
+    return ret;
+  }
+
+  @GetMapping("/list")
+  public List<Event> list() {
+    List<Event> ret = this.eventService.getAll();
+    return ret;
+  }
+}
+
+@Getter
+@Setter
+class EventData {
+  private String title;
+  private LocalDateTime dateTime;
+}
+
+```
+{% endcode %}
