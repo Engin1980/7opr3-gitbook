@@ -28,7 +28,7 @@ Do těla požadavku vložíme text přidávané položky:
 
 Vzhled výsledného požadavku:
 
-<figure><img src="../.gitbook/assets/jwtRegistrace.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/postman-event-create.jpg" alt=""><figcaption></figcaption></figure>
 
 Po odeslání požadavku vidíme dole v okně výsledek - zelený kód odpovědi `200 OK` a v textovém okně hodnotu přiřazeného ID. Při opakovaném volání požadavku se bude ID zvyšovat.
 
@@ -43,7 +43,7 @@ Vytvoříme nový postman-request a nastavíme mu:
   * buď v těle požadavku jako formulářové pole - v tom případě zvolíme záložku _Body_ a v ní sekci _form-data_; do sloupce _key_ zapíšeme název parametru, tedy `eventId`, do pole _value_ hodnotu 1, nebo
   * id předáme v URL parametru - v tom případě vybereme záložku _Params_ a opět do sloupce _key_ zapíšeme název parametru, tedy `eventId`, do pole _value_ hodnotu 1; všimněme si, jak se nyní URL požadavku změní na `localhost:8080/event?eventId=1`.
 
-
+<figure><img src="../.gitbook/assets/postman-event-get.jpg" alt=""><figcaption></figcaption></figure>
 
 Po spuštění by se nám měl opět vrátit stav `200 OK` a buď prázdná odpověď (pokud záznam nebyl nalezen), nebo JSON s výstupem.
 
@@ -56,3 +56,5 @@ Vytvoříme nový postman-request a nastavíme mu:
 * URL požadavek nastavíme na `localhost:8080/event/list`.
 
 Provoláním získáme informace o všech uložených záznamech v naší aplikaci.
+
+<figure><img src="../.gitbook/assets/postman-event-list.jpg" alt=""><figcaption></figcaption></figure>
