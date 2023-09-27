@@ -29,5 +29,5 @@ npm install -g @angular/clint
 Na počítačích Windows s využitím PowerShell mohou být omezena práva na spouštění externích skriptů. Proto v prostředí PowerShell můžeme/musíme posílit práva spouštění skriptů příkazem:\
 \`Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned\`.
 
-Tento příkaz ale nastavuje práva na spouštění v rámci celého uživatelského účtu. Je proto vhodné pro instalaci Angular práva zpět povýšit.
+Tento příkaz ale nastavuje práva na spouštění v rámci celého uživatelského účtu. Je proto vhodné po instalaci Angular práva zpět ponížit.
 {% endhint %}
