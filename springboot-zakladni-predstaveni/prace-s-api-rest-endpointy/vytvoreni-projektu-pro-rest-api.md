@@ -1,6 +1,6 @@
 # Vytvoření projektu pro REST API
 
-Vytvoření nového projektu se provede přes prostředí Idea a do něj integrovaný "Spring Initializr".&#x20;
+Vytvoření nového projektu se provede přes prostředí Idea a do něj integrovaný "Spring Initializr".
 
 {% hint style="info" %}
 _Spring Initializr_ je dostupný i z jiných vývojových prostředí, nebo přímo na internetové adrese [https://start.spring.io/](https://start.spring.io/).
@@ -12,7 +12,7 @@ Pro funkcionalitu je třeba mít IntelliJ Idea ve verzi Ultimate ([https://www.j
 
 Z nabídky _File_ se zvolí položka _New Project_. Z jeho nabídky se vybere položka _Spring Initializr_. Dále se vloží název projektu (bude se realizovat triviální projekt připomínek, _event-reminder_), vybere se jazyk (Java), typ projektu (Maven), JDK (>= openjdk-18) a verzi Javy (>= 17). Nakonec se zvolí balení do Jar balíčku. Volba se potvrdí tlačítkem _Next_.
 
-<figure><img src="../.gitbook/assets/springboot-wizard-event-1.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/springboot-wizard-event-1.jpg" alt=""><figcaption></figcaption></figure>
 
 Na další stránce průvodce se zvolí verze SpringBoot (tutorial bude demonstrován na verzi 3.1.4) a požadované závislosti. Pro tvořený projekt bude třeba:
 
@@ -26,7 +26,7 @@ V úvodní části projektu nebude realizováno přihlašování a práce s DB, 
 
 Následně průvodce potvrdíme a vytvoří se nový projekt.
 
-<figure><img src="../.gitbook/assets/springboot-wizard-event-2.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/springboot-wizard-event-2.jpg" alt=""><figcaption></figcaption></figure>
 
 V novém projektu jsou pro nás aktuálně zajímavé ve složce projektu základní položky:
 
