@@ -83,6 +83,26 @@ public int createDocumented(
 Pozor, pro anotování parametru se používá anotace `@RequestBody`. Je však třeba odlišovat základní anotaci z balíčku `org.springframework.web.bind.annotation.RequestBody`, která nemá atribut `description`, a anotací z OAS v balíčku `io.swagger.v3.oas.annotations.parameters.RequestBody`.
 {% endhint %}
 
+#### Ukázka okomentování @RestControllerAdvice
+
+Jednoduchým způsobem pomocí anotací lze okomentovat a zahrnout do generovaného výstupu i metody obsluhující výjimky v `RestControllerAdvice`. Využije se anotace `@ResponseStatus` - řádek 5):
+
+{% code lineNumbers="true" %}
+```java
+@RestControllerAdvice
+public class ControllerExceptionHandler {
+
+  @ExceptionHandler(NoSuchElementException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<String> noSuchElementExceptionHandler(
+    NoSuchElementException ex, 
+    WebRequest request){
+    return new ResponseEntity<>("Element not found", HttpStatus.NOT_FOUND);
+  }
+}
+```
+{% endcode %}
+
 #### Ukázka výstupu
 
 <figure><img src="../../.gitbook/assets/swagger-event-documented.jpg" alt=""><figcaption></figcaption></figure>
