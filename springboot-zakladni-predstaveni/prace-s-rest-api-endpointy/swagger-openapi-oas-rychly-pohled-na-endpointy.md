@@ -1,12 +1,10 @@
 # Swagger/OpenAPI OAS - rychlý pohled na endpointy
 
-Swagger je nástroj a rámec pro dokumentaci a testování rozhraní API (Application Programming Interface). Jedná se o otevřený standard pro popis API, který umožňuje definovat, jak API funguje, jaké má endpointy, jaké parametry očekává a jaká data vrací. Swagger také obsahuje nástroje pro generování dokumentace z komentářů ve zdrojovém kódu, vytváření testovacích klientů pro API a nástroje pro validaci datových vstupů a výstupů API.&#x20;
+Swagger je nástroj a rámec pro dokumentaci a testování rozhraní API (Application Programming Interface). Jedná se o otevřený standard pro popis API, který umožňuje definovat, jak API funguje, jaké má endpointy, jaké parametry očekává a jaká data vrací. Swagger také obsahuje nástroje pro generování dokumentace z komentářů ve zdrojovém kódu, vytváření testovacích klientů pro API a nástroje pro validaci datových vstupů a výstupů API.
 
 Swagger byl později přejmenován na OpenAPI Specification (OAS) a stále se používá ve vývoji softwaru pro tvorbu a správu API. OAS je standardem pro popis RESTful API a je podporován mnoha nástroji a frameworky pro vývoj API. OAS umožňuje vytvořit jednotný a dobře zdokumentovaný popis API, což usnadňuje jeho používání a integraci s jinými systémy.
 
 V našem projektu si ukážeme připojení OAS pro prezentaci nabízených endpointů.
-
-
 
 {% hint style="info" %}
 Implementace připojení Swagger/OAS do SpringBoot 3.x vs 2.x se výrazně liší. Proto si vždy zkontrolujte, jakou verzi SpringBoot používáte.
@@ -27,7 +25,7 @@ Aktivace OAS/Swagger ve SpringBoot 3 je velmi jednoduchá. Stačí do projektu p
 {% hint style="warning" %}
 Pokud máte zapnuté _Spring Security_ a vytvořenou konfiguraci přístupů na endpointy vaší aplikace, zřejmě se na Swagger stránky nedostanete kvůli omezení přístupu. V tom případě je nutné v konfiguraci přístupů - tam, kde se řeší `SecurityFilterChain`, přidat výjimku pro přístup pro endpointy:\
 \
-.requestMatchers("/v3/").permitAll()&#x20;
+.requestMatchers("/v3/").permitAll()
 
 .requestMatchers("/swagger-ui/").permitAll()
 {% endhint %}
@@ -88,3 +86,5 @@ Pozor, pro anotování parametru se používá anotace `@RequestBody`. Je však 
 #### Ukázka výstupu
 
 <figure><img src="../../.gitbook/assets/swagger-event-documented.jpg" alt=""><figcaption></figcaption></figure>
+
+Pro bližší informace například viz [https://www.baeldung.com/spring-rest-openapi-documentation](https://www.baeldung.com/spring-rest-openapi-documentation).
