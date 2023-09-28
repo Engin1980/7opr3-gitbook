@@ -36,7 +36,7 @@ Pokud máte zapnuté _Spring Security_ a vytvořenou konfiguraci přístupů na 
 
 Po přidání knihovny (a případné konfiguraci přístupů) stačí projekt spustit a navštívit adresu `localhost:8080/swagger-ui/index.html`. Na této stránce by se měla otevřít nabídka našich endpointů, kde lze sledovat, jaké parametry dostávají, jaké kódy a návratové objekty vracejí a také je lze provolávat pomocí tlačítka _Try it out_.
 
-
+<figure><img src="../../.gitbook/assets/swagger-event.jpg" alt=""><figcaption></figcaption></figure>
 
 ## Dokumentace endpointů
 
@@ -87,3 +87,4 @@ Pozor, pro anotování parametru se používá anotace `@RequestBody`. Je však 
 
 #### Ukázka výstupu
 
+<figure><img src="../../.gitbook/assets/swagger-event-documented.jpg" alt=""><figcaption></figcaption></figure>
