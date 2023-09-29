@@ -130,3 +130,31 @@ Ze třídy byly odstraněny všechny zmínky o kolekci `List<Event> events`:
 * Ve funkci `getAll()` se vrátí všechny záznamy. Volání `findAll(...)` je navíc zkrášleno seřazením vrácených záznamů podle datumu a času události (řádek 34).
 * Funkce `update()` využívá JTO, aby aktualizovala záznam v DB. Nejdříve zjistí odkazový objekt eventu (řádek 39)(objekt nepotřebujeme načítat celý, stačí nám reference), následně jej naplníme hodnotami z JTO (řádek 41) a uložíme (řádek 42).
 * Funkce `delete()` vymaže záznam z DB dle ID. Nejdříve se zjistí odkazový objekt (řádek 46) a ten se následně smaže (řádek 47).
+
+## Úprava kontroleru EventControler - přidání nových operací
+
+S ohledem na přidání nových operaci editace a mazání položky u repozitáře a služby je třeba stejnou část přidat i do kontroleru `EventController`. Pro stručnost uvádíme pouze nově přidané metody (zbytek kódu kontroleru zůstane beze změn):
+
+```java
+  @PatchMapping
+  public void update(@RequestBody EventJTO event){
+    this.eventService.update(event);
+  }
+
+  @DeleteMapping
+  public void delete(@RequestParam int eventId){
+    this.eventService.delete(eventId);
+  }
+```
+
+Vidíme, že u kontroleru je implementace velmi triviální, využívá pouze poskytovaných metod služby `eventService`. Je vhodné si povšimnout parametr u `update`, který využívá dříve vytvořený `EventJTO`. I tento parametr se pak přes Postman musí posílat jako JSON (obdobně jako u  `create`), ale navíc musí mít definovanou položku `eventId`.
+
+(obrázek event-postman-update)
+
+{% hint style="info" %}
+Někdy se vede diskuze, zda změna (update) objektu je HTTP operace PUT nebo PATCH. Z pohledu logiky by operace PUT měla být chápána jako komplexní náhrada objektu se stejným ID za nový, operace PATCH jako parciální změna existujícího objektu. Někdy se také argumentuje, že operace PUT je idempotentní (lze ji volat libovolně-krát a výsledek bude vždy stejný) a operace PATCH nikoliv. Obecně je to jedno, obě budou fungovat stejně.&#x20;
+{% endhint %}
+
+## Shrnutí
+
+Tím jsou provedené změny kompletní a projekt je možno spustit a vyzkoušet přes Postman.
