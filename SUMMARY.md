@@ -14,7 +14,7 @@
   * [Práce s JPA a databází](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi.md)
     * [Připojení knihoven a vytvoření DB](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/pripojeni-knihoven-a-vytvoreni-db.md)
     * [Tvorba tříd entit a repository](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/tvorba-trid-entit-a-repository.md)
-    * [Page](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/page.md)
+    * [Úprava služby EventService pro práci s DB](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/uprava-sluzby-eventservice-pro-praci-s-db.md)
   * [Relevantní literatura](springboot-zakladni-predstaveni/relevantni-literatura.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
