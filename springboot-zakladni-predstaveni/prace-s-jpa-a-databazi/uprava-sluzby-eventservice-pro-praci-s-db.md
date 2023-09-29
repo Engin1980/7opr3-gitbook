@@ -39,7 +39,9 @@ Pomocí Lombok je vytvoření velmi jednoduché - definujeme pouze vnitřní pro
 
 ## Vložka II: Mapovací knihovna
 
-safse
+Při použití DTO se přenášení dat mezi entitami a DTO stane častým problémem, který často spočívá pouze v triviálním kopírování hodnot atributů typu `entity.setName(dto.getName())`, což je pracná a nudná programátorská rutina. Proto se k tomuto účelu využívají speciální implementace (nebo rovnou frameworky), které tuto činnost provádějí automaticky. Těmto knihovnám/objektům se říká _(objektové)_ _mappery_.
+
+Pro jeho jednoduchost si v našem projektu ukážem objektový mapper _ModelMapper_ ([https://modelmapper.org/](https://modelmapper.org/)). Pro jeho přidání do projektu stačí přes Maven do `pom.xml` přidat jednu závislost ([https://mvnrepository.com/artifact/org.modelmapper/modelmapper](https://mvnrepository.com/artifact/org.modelmapper/modelmapper)):
 
 ```xml
 <dependency>
@@ -49,7 +51,16 @@ safse
 </dependency>
 ```
 
-fase
+Kratičký příklad použití přebraný ze stránek projektu ModelMapper:
+
+```java
+ModelMapper modelMapper = new ModelMapper();
+OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+```
+
+{% hint style="info" %}
+_ModelMapper_ je jednoduchý (byť výkonný) mapovač. Pokud však máme více specifické požadavky na řízení a kontrolu procesu mapování používají se komplexnější nástroje, například _MapStruct_ ([https://mapstruct.org/](https://mapstruct.org/)).
+{% endhint %}
 
 ## Úprava služby EventService
 
