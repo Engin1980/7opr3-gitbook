@@ -11,7 +11,7 @@
     * [Testování endpointů](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/testovani-endpointu.md)
     * [Správa chyb při práci s endpointy](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/sprava-chyb-pri-praci-s-endpointy.md)
     * [Swagger/OpenAPI OAS - rychlý pohled na endpointy](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/swagger-openapi-oas-rychly-pohled-na-endpointy.md)
-  * [Práce s JPA a databází](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/README.md)
+  * [Práce s JPA a databází](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi.md)
     * [Připojení knihoven a vytvoření DB](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/pripojeni-knihoven-a-vytvoreni-db.md)
   * [Relevantní literatura](springboot-zakladni-predstaveni/relevantni-literatura.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
