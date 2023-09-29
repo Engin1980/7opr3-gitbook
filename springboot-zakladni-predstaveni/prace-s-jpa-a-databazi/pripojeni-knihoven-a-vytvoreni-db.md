@@ -61,3 +61,7 @@ Soubor obsahuje (podle čísel řádků):
 6. Nastavení inicializace DB při spuštění (platí jen pro Hibernate jako implementaci použitou pod JPA). Možnosti jsou:
 
 <table><thead><tr><th width="142">Hodnota</th><th>Význam</th></tr></thead><tbody><tr><td>create</td><td>Vytvoří při každém spuštění schéma databáze. Pokud existuje, je staré schéma zrušeno a nahrazeno novým (dojde k výmazu dat).</td></tr><tr><td>create-drop</td><td>Vytvoří při každém spuštění schéma databáze. Po ukončení připojení je schéma zrušeno (dojde k výmazu dat). Používá se typicky pro testování.</td></tr><tr><td>validate</td><td>Zkontroluje, zda schéma databáze pasuje na objektový entitní model; v případě chyby způsobí pád aplikace při spuštění.</td></tr><tr><td>update</td><td>Zkontroluje, zda schéma databáze pasuje na objektový entitní model; v případě rozdílu zajistí úpravu schématu (může dojít k výmazu dat)</td></tr></tbody></table>
+
+{% hint style="info" %}
+Klíč `spring.jpa.hibernate.ddl-auto` je specifický pouze pro použití s JPA, kdy podkladovým mechanismem pro persistenci je Hibernate. JPA však může používat jiné podkladové technologie pro práci s databází. Pro ty lze použít univerzální, technologicky nezávislý klíč `spring.jpa.generate-ddl=true/false`. Bližší informace například viz [https://docs.spring.io/spring-boot/docs/1.1.0.M1/reference/html/howto-database-initialization.html](https://docs.spring.io/spring-boot/docs/1.1.0.M1/reference/html/howto-database-initialization.html).
+{% endhint %}
