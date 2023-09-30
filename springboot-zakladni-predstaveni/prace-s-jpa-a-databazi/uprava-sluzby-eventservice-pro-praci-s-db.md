@@ -149,7 +149,7 @@ S ohledem na přidání nových operaci editace a mazání položky u repozitá�
 
 Vidíme, že u kontroleru je implementace velmi triviální, využívá pouze poskytovaných metod služby `eventService`. Je vhodné si povšimnout parametr u `update`, který využívá dříve vytvořený `EventJTO`. I tento parametr se pak přes Postman musí posílat jako JSON (obdobně jako u  `create`), ale navíc musí mít definovanou položku `eventId`.
 
-(obrázek event-postman-update)
+<figure><img src="../../.gitbook/assets/postman-event-update.jpg" alt=""><figcaption></figcaption></figure>
 
 {% hint style="info" %}
 Někdy se vede diskuze, zda změna (update) objektu je HTTP operace PUT nebo PATCH. Z pohledu logiky by operace PUT měla být chápána jako komplexní náhrada objektu se stejným ID za nový, operace PATCH jako parciální změna existujícího objektu. Někdy se také argumentuje, že operace PUT je idempotentní (lze ji volat libovolně-krát a výsledek bude vždy stejný) a operace PATCH nikoliv. Obecně je to jedno, obě budou fungovat stejně.&#x20;
