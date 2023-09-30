@@ -246,3 +246,7 @@ public class EventController {
 ## Shrnutí
 
 Kód je hotov. Nyní stačí vytvořit odpovídající Postman akce pro testování endpointů.
+
+<figure><img src="../../.gitbook/assets/postman-event-addNote.jpg" alt=""><figcaption></figcaption></figure>
+
+<figure><img src="../../.gitbook/assets/postman-event-deleteNote.jpg" alt=""><figcaption></figcaption></figure>
