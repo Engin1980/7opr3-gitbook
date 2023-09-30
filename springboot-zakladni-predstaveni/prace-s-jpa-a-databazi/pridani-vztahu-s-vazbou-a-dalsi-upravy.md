@@ -197,3 +197,52 @@ Změněné či nové funkce:
 * `getAll()` vrací list událostí seřazených podle data a také přemapovaných do `EventJTO` (řádky 44-47),
 * `addNote(...)` přidává poznámku k události - k tomu potřebuje `eventId` a `noteText`. Nejdříve zkontroluje, zda odpovídají event dle ID existuje (řádek 64-65), následně získá referenci na objekt (řádek 66), vytvoří dle jeho ID novou poznámku (řádek 67) a uloží jej,
 * `deleteNote(...)` smaže poznámku dle id.
+
+## Úprava kontroleru
+
+V kontroleru `EventController` bude už úprava jednoduchá - je třeba upravit pouze návratové typy po operacích get a list z `Event` na `EventJTO` a přidat dvě metody pro přidání a smazání poznámky.
+
+<table><thead><tr><th width="153.33333333333331">Endpoint</th><th width="165">HTTP metoda</th><th>Popis</th></tr></thead><tbody><tr><td>/event/note</td><td>POST</td><td>Vytvoří novou poznámku pro daný <code>eventId</code> a <code>noteText</code></td></tr><tr><td>/event/note</td><td>DELETE</td><td>Smaže poznámku podle <code>noteId</code></td></tr></tbody></table>
+
+Uveden pouze výsek opraveného kódu:
+
+{% code title="EventController.java (část)" lineNumbers="true" %}
+```java
+//...
+
+@RestController
+@RequestMapping("/event")
+public class EventController {
+
+  // ...
+  
+  @GetMapping
+  public EventJTO getById(@RequestParam int eventId) {
+    EventJTO ret = this.eventService.getById(eventId);
+    return ret;
+  }
+  
+  @GetMapping("/list")
+  public List<EventJTO> list() {
+    List<EventJTO> ret = this.eventService.getAll();
+    return ret;
+  }
+
+  // ...
+  
+  @PostMapping("/note")
+  public void addNote(@RequestParam int eventId, @RequestParam String noteText){
+    this.eventService.addNote(eventId, noteText);
+  }
+
+  @DeleteMapping("/note")
+  public void deleteNote(@RequestParam int noteId){
+    this.eventService.deleteNote(noteId);
+  }
+}
+```
+{% endcode %}
+
+## Shrnutí
+
+Kód je hotov. Nyní stačí vytvořit odpovídající Postman akce pro testování endpointů.
