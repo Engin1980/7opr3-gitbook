@@ -41,6 +41,8 @@ Před připojením/vytvářením databáze je samozřejmě nutné mít spuštěn
 
 (obrázek IDEA DB)
 
+<figure><img src="../../.gitbook/assets/postman-event-get.jpg" alt=""><figcaption></figcaption></figure>
+
 Následně je třeba říci JPA ve SpringBoot, kam se bude naše aplikace připojovat. Konfigurace se typicky dává do konfiguračního souboru /src/main/resource/application.properties, do kterého vložíme následující řádky:
 
 <pre class="language-properties" data-title="application.properties" data-line-numbers><code class="lang-properties">spring.datasource.driver-class-name=org.apache.derby.jdbc.ClientDriver
