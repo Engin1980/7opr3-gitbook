@@ -39,9 +39,7 @@ V prostředí IDEA můžeme vytvořit databázi přímo z jeho nástroje na proh
 
 Před připojením/vytvářením databáze je samozřejmě nutné mít spuštěný databázový server. Apache Derby server stačí spustit s příkazové řádky, nebyl-li konfigurován jinak, připojení k němu bude realizováno jako připojení na `localhost`, port `1527`. Databázi na něm vytvoříme prvním otestováním připojení s postfixem u připojovacího řetězce `....;create=True`. Po úspěšném připojení po vytvoření databáze postfix odstraníme.
 
-(obrázek IDEA DB)
-
-<figure><img src="../../.gitbook/assets/postman-event-get.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/idea-event-db.jpg" alt=""><figcaption></figcaption></figure>
 
 Následně je třeba říci JPA ve SpringBoot, kam se bude naše aplikace připojovat. Konfigurace se typicky dává do konfiguračního souboru /src/main/resource/application.properties, do kterého vložíme následující řádky:
 
