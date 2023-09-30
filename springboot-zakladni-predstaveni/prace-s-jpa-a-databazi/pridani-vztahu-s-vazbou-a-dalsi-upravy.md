@@ -191,3 +191,9 @@ public class EventService {
 ```
 {% endcode %}
 
+Změněné či nové funkce:
+
+* `getById()` vrací EventJTO, kterou získá pomocí model-mapperu (řádek 24, 37); pokud záznam nebyl nalezen, vrací výjimku,
+* `getAll()` vrací list událostí seřazených podle data a také přemapovaných do `EventJTO` (řádky 44-47),
+* `addNote(...)` přidává poznámku k události - k tomu potřebuje `eventId` a `noteText`. Nejdříve zkontroluje, zda odpovídají event dle ID existuje (řádek 64-65), následně získá referenci na objekt (řádek 66), vytvoří dle jeho ID novou poznámku (řádek 67) a uloží jej,
+* `deleteNote(...)` smaže poznámku dle id.
