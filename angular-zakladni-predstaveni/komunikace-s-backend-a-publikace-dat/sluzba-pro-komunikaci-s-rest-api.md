@@ -93,8 +93,145 @@ Toto je základní implementace vrácení všech dat událostí z backendu. Prot
 
 ## Přidání dalších metod pro práci s rozhraním
 
-fasef
+Nyní implementujeme základ všech dalších metod, které využijeme v našem projektu pro práci s rozhraním - vytvoření události, získání události podle id, vytvoření a smazání poznámky. Před demonstrací však ještě ukážeme, jakým způsobem rozšíříme metodu získávání seznamu všech událostí o zachycení chyby.
 
-## Přidání zachytávání chyb
+Nejdříve si vytvoříme pomocnou třídu pro informaci o vzniklé chybě:
 
-asef
+```typescript
+export class EventHttpError {
+  public readonly message: string;
+  public readonly inner: any;
+
+  constructor(message: string, inner?: any) {
+    this.message = message;
+    this.inner = inner;
+  }
+}
+```
+
+A nyní se podíváme na rozšíření chyby. Původní metoda se rozšíří o řádky 5-8 plné tajemných lambda výrazů/arrow-function-výrazů:
+
+{% code lineNumbers="true" %}
+```typescript
+public list(): Observable<EventDto[]> {
+  const url = this.url + "/list";
+  const ret = this.http.get<EventDto[]>(url).pipe(
+    tap(q => this.printResult("list", q)),
+    catchError(e =>
+      throwError(() =>
+        new EventHttpError("Failed to get list of events", e)))
+  );
+  return ret;
+}
+```
+{% endcode %}
+
+Za příkaz `tap(...)` (řádek 4) za čárku přidáme další příkaz do sekvence pipe - `catchError(...)`. Tato funkce se volá vždy, když při zpracování vznikne nějaká chyba. Ta do funkce vstoupí jako parametr `e`, který zobrazíme do volání funkce `throwError(...)`. Tato funkce zase umí vyhodit novou výjimku. Naším cílem je zabalit původní výjimku/objekt `e` do nové výjimky/objektu `EventHttpError`. Nechceme ale volat pouhé `new EventHttpError(...)` , ale složitější `() => new EventHttpError(...)`. Rozdíl je v tom, že u prvního volání se předává přímo vytvořený objekt chyby (který se proto musí vytvořit vždycky, i když se funkce `catchError(...)` nezavolá, kdežto druhá varianta předává funkci, která umí chybový objekt zkonstruovat. Samotná konstrukce však proběhne až pouze bude-li to třeba.
+
+{% hint style="warning" %}
+Přečtěte si předchozí odstavec ještě jednou. Tato technika (předání lambdy namísto přímo vytvořeného objektu) je velmi důležitá a používá se často. Její pochopení je klíčové.
+{% endhint %}
+
+{% hint style="info" %}
+Lambda výrazům se technicky v Javascriptu/Typescriptu říká Arrow-Function-Expressions. Více například viz  [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow\_functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow\_functions).
+{% endhint %}
+
+Toto zachycení přidáme do každé metody. Výsledný kód třídy/souboru `event-http.service.ts` tedy je:
+
+{% code title="event-http.service.ts" lineNumbers="true" %}
+```typescript
+import {catchError, Observable, tap, throwError} from "rxjs";
+import {EventDto} from "../model/event-dto";
+import {HttpClient, HttpErrorResponse, HttpParams} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EventHttpService {
+  private url = "http://localhost:8080/event"
+
+  constructor(
+    private http: HttpClient
+  ) {
+  }
+
+  public list(): Observable<EventDto[]> {
+    const url = this.url + "/list";
+    const ret = this.http.get<EventDto[]>(url).pipe(
+      tap(q => this.printResult("list", q)),
+      catchError(e =>
+        throwError(() =>
+          new EventHttpError("Failed to get list of events", e)))
+    );
+    return ret;
+  }
+
+  private printResult(method: string, data: any): void {
+    console.log("METHOD " + method);
+    console.log(JSON.stringify(data));
+  }
+
+  public create(title: string, dateTime: Date): Observable<number> {
+    const url = this.url;
+    const body = {
+      title: title,
+      dateTime: dateTime.toISOString()
+    };
+    const ret = this.http.post<number>(url, body).pipe(
+      catchError(e=>
+        throwError(() =>
+          new EventHttpError(`Failed to crate object title={title} and dateTime={dateTime}`, e)))
+    );
+    return ret;
+  }
+
+  public get(eventId: number) {
+    const url = this.url
+    const ret = this.http.get<EventDto>(url).pipe(
+      tap(q => this.printResult("list", q)),
+      catchError(e =>
+        throwError(() =>
+          new EventHttpError(`Failed to get event by eventId = {eventId}`, e)))
+    );
+    return ret;
+  }
+
+  public createNote(eventId: number, text: string): Observable<number> {
+    const url = this.url + "/note";
+    const formData = new FormData()
+    formData.append("eventId", eventId.toString());
+    formData.append("noteText", text);
+    const ret = this.http.post<number>(url, formData).pipe(
+      catchError(e =>
+        throwError(() =>
+          new EventHttpError(`Failed to create note with eventId={eventId} and text={text}`, e)))
+    );
+    return ret;
+  }
+
+  public deleteNote(noteId: number): Observable<void> {
+    const url = this.url + "/note";
+    const httpParams = new HttpParams()
+      .set("noteId", noteId);
+    const ret = this.http.delete<void>(url, {params: httpParams}).pipe(
+      catchError(e =>
+        throwError(() =>
+          new EventHttpError(`Failed to delete note with noteId={noteId}`, e)))
+    );
+    return ret;
+  }
+}
+
+export class EventHttpError {
+  public readonly message: string;
+  public readonly inner: any;
+
+  constructor(message: string, inner?: any) {
+    this.message = message;
+    this.inner = inner;
+  }
+}
+```
+{% endcode %}
+
