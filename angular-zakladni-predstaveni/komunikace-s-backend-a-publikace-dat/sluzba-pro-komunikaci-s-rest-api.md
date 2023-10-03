@@ -235,3 +235,4 @@ export class EventHttpError {
 ```
 {% endcode %}
 
+Volitelně můžete do zdrojového kódu vložit i pomocné výpisy odpovědí jak je uvedeno u funkce `list(...)` (řádek 20).
