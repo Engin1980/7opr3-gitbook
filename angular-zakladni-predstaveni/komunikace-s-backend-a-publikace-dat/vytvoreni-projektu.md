@@ -19,7 +19,7 @@ cd event-reminder-front
 npm install rxjs
 ```
 
-### Příprava souborové struktury a Bootstrapu
+## Příprava souborové struktury a Bootstrapu
 
 V projektu - složce `src/app` vytvoříme následující adresářovou strukturu:
 
@@ -56,6 +56,32 @@ Dále do souboru `index.html` zavedeme Boostrap 5 přes CDN (řádky 9-16):
 </body>
 </html>
 
+```
+{% endcode %}
+
+## Nastavení hlavní komponenty a základních stylů
+
+Zde si již projekt můžete přizpůsobit dle vlastních požadavků a vkusu.
+
+Nejdříve smažeme předgenerovaný obsah hlavní komponenty `app.component.html` a nahradíme ho jednoduchým obsahem:
+
+{% code title="app.component.html" lineNumbers="true" %}
+```html
+<div class="title">Události</div>
+<router-outlet></router-outlet>
+```
+{% endcode %}
+
+Následně komponentě doplníme jednoduchý styl do `app.component.css` (lze upravit dle libosti):
+
+{% code title="app.component.css" lineNumbers="true" %}
+```css
+.title{
+  font-size: 48px;
+  letter-spacing: 5px;
+  font-weight: bold;
+  text-shadow: 8px 8px lightgray;
+}
 ```
 {% endcode %}
 

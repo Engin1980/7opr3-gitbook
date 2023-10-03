@@ -19,6 +19,7 @@
   * [Základní práce s komponentami - Projekt 'RGB View'](angular-zakladni-predstaveni/zakladni-prace-s-komponentami-projekt-rgb-view.md)
   * [Komunikace s Backend a publikace dat](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/README.md)
     * [Vytvoření projektu](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-projektu.md)
+    * [Služba pro komunikaci s REST API](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/sluzba-pro-komunikaci-s-rest-api.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
   * [JWT - JSON Web Token](atentizace-a-autorizace/jwt-json-web-token.md)
