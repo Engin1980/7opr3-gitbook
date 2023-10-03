@@ -1,9 +1,6 @@
 # Table of contents
 
 * [Instalace](README.md)
-* [Angular - základní představení](angular-zakladni-predstaveni/README.md)
-  * [Instalace](angular-zakladni-predstaveni/instalace.md)
-  * [Základní práce s komponentami - Projekt 'RGB View'](angular-zakladni-predstaveni/zakladni-prace-s-komponentami-projekt-rgb-view.md)
 * [SpringBoot - základní představení](springboot-zakladni-predstaveni.md)
   * [Práce s REST API endpointy](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/README.md)
     * [Vytvoření projektu pro REST API](springboot-zakladni-predstaveni/prace-s-rest-api-endpointy/vytvoreni-projektu-pro-rest-api.md)
@@ -17,6 +14,11 @@
     * [Úprava služby EventService pro práci s DB](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/uprava-sluzby-eventservice-pro-praci-s-db.md)
     * [Přidání vztahu s vazbou a další úpravy](springboot-zakladni-predstaveni/prace-s-jpa-a-databazi/pridani-vztahu-s-vazbou-a-dalsi-upravy.md)
   * [Relevantní literatura](springboot-zakladni-predstaveni/relevantni-literatura.md)
+* [Angular - základní představení](angular-zakladni-predstaveni/README.md)
+  * [Instalace](angular-zakladni-predstaveni/instalace.md)
+  * [Základní práce s komponentami - Projekt 'RGB View'](angular-zakladni-predstaveni/zakladni-prace-s-komponentami-projekt-rgb-view.md)
+  * [Komunikace s Backend a publikace dat](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/README.md)
+    * [Vytvoření projektu](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-projektu.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
   * [JWT - JSON Web Token](atentizace-a-autorizace/jwt-json-web-token.md)
