@@ -104,16 +104,18 @@ Toto volání lze zkrátit s využitím `=>` jako:
 
 {% code lineNumbers="true" %}
 ```typescript
-public deleteNote = (noteId: number): Observable<void> 
-  => this.http.deleteNote(noteId);
+public deleteNote = 
+  (noteId: number): Observable<void> => this.http.deleteNote(noteId);
 ```
 {% endcode %}
 
 {% hint style="info" %}
 Pokud jste zvyklí na podobnou syntax z Java/C#, povšimněte si důležitého znaku `=` mezi názvem a deklarací signatury metody.
+
+Obdobnou odlišností je nemožnost  zalomit řádek před/za `=>`.
 {% endhint %}
 
-## Vlastní implementace třídy
+## Vlastní implementace služby
 
 Do složky /src/app/components přidáme novou službu `EventService` pomocí příkazové řádky jako:
 
@@ -150,7 +152,7 @@ export class EventService {
   public get(eventId: number): Observable<EventDto> {
     return this.http.get(eventId);
   }
-  
+
   public create(title: string, dateTime: Date): Observable<EventDto> {
     return this.http.create(title, dateTime).pipe(
       mergeMap(q => this.get(q))
@@ -160,14 +162,14 @@ export class EventService {
   public createNote(eventId: number, text: string): Observable<NoteDto> {
     return this.http.createNote(eventId, text).pipe(
       map(q => ({
-          noteId: q,
-          text: text
+        noteId: q,
+        text: text
       }))
     );
   }
 
-  public deleteNote = (noteId: number): Observable<void> 
-    => this.http.deleteNote(noteId);
+  public deleteNote =
+    (noteId: number): Observable<void> => this.http.deleteNote(noteId);
 }
 ```
 {% endcode %}
