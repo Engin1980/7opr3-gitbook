@@ -1,6 +1,6 @@
-# Vytvoření komponenty
+# Vytvoření komponent
 
-Dalším krokem je vytvoření komponenty, která bude zobrazovat data.
+Dalším krokem je vytvoření komponent, které budou zobrazovat data.
 
 ## Routing
 
@@ -67,7 +67,50 @@ ng g c event-note
 
 ## Tvorba komponenty event-list
 
-asfe
+### Kód na pozadí - ts
+
+Kód na pozadí komponenty je poměrně jednoduchý.
+
+{% code title="event-list.component.ts" lineNumbers="true" %}
+```typescript
+import {Component} from '@angular/core';
+import {EventDto} from "../../model/event-dto";
+import {EventService} from "../../services/event.service";
+import {EventHttpError} from "../../services/event-http.service";
+
+@Component({
+  selector: 'app-event-list',
+  templateUrl: './event-list.component.html',
+  styleUrls: ['./event-list.component.css']
+})
+export class EventListComponent {
+
+  events: EventDto[] = [];
+
+  constructor(
+    private eventService: EventService
+  ) {
+  }
+
+  ngOnInit() {
+    this.eventService.getAll()
+      .subscribe({
+        next: q => this.events.push(q),
+        error: (e: EventHttpError) => console.log(e.message)
+      })
+  }
+
+  protected onEventCreated(event: EventDto): void {
+    this.events.push(event);
+  }
+}
+
+```
+{% endcode %}
+
+V konstruktoru (řádek 16) připojíme do komponenty službu událostí `eventService`. Na řádku 13 definujeme `events` jako seznam událostí, které se budou zobrazovat. Tato proměnná se ihned incializuje jako prázdné pole `[]`, do kterého se při inicializaci komponenty (`ngOnInit()`, řádek 20) přes `eventService.getAll()` načtou všechny události a postupně se plní do seznamu událostí (řádek 23).
+
+Jako parametru funkce `subscribe(...)` ...
 
 ## Tvorba komponenty event-create
 
@@ -76,3 +119,5 @@ asef
 ## Tvorba komponenty event-note
 
 asef
+
+TODO: Posunout routing pod tvorbu komponent

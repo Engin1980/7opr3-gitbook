@@ -21,7 +21,7 @@
     * [Vytvoření projektu](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-projektu.md)
     * [Služba pro komunikaci s REST API](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/sluzba-pro-komunikaci-s-rest-api.md)
     * [Vytvoření služby](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-sluzby.md)
-    * [Vytvoření komponenty](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-komponenty.md)
+    * [Vytvoření komponent](angular-zakladni-predstaveni/komunikace-s-backend-a-publikace-dat/vytvoreni-komponent.md)
 * [Atentizace a autorizace](atentizace-a-autorizace/README.md)
   * [Primitivní autentizace a autorizace REST služby](atentizace-a-autorizace/primitivni-autentizace-a-autorizace-rest-sluzby.md)
   * [JWT - JSON Web Token](atentizace-a-autorizace/jwt-json-web-token.md)
