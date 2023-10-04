@@ -2,11 +2,27 @@
 
 Dalším krokem je vytvoření komponent, které budou zobrazovat data.
 
-<figure><img src="../../.gitbook/assets/angular-rgb-components.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/angular-event-reminder-overview.jpg" alt=""><figcaption></figcaption></figure>
+
+## Tvorba komponent
+
+V projektu použijeme 3 komponenty:
+
+* **event-list** jako hlavní komponentu, která bude zobrazovat seznam událostí, a interně bude v sobě zobrazovat další komponenty,
+* **event-create** jako komponentu pro pro vytváření nové události; bude zobrazena uvnitř hlavní komponenty,
+* **event-note** jako komponentu zobrazující poznámky u události a jejich přidávání a mazání; bude zobrazena uvnitř hlavní komponenty.
+
+Protože se hned na komponenty budeme odkazovat, vytvoříme je všechny najednou, do složky /src/app/components:
+
+```powershell
+ng g c event-create
+ng g c event-list
+ng g c event-note
+```
 
 ## Routing
 
-Nejdříve přizpůsobíme routing. V naší aplikaci budeme mít pouze jednu hlavní zobrazovací komponentu. Proto uděláme jednu univerzální cestu. Do souboru `app-routing.module.ts` přidáme cestu (upravíme proměnnou `routes`):
+Dále přizpůsobíme routing. V naší aplikaci budeme mít pouze jednu hlavní zobrazovací komponentu. Proto uděláme jednu univerzální cestu. Do souboru `app-routing.module.ts` přidáme cestu (upravíme proměnnou `routes`):
 
 ```typescript
 const routes: Routes = [
@@ -50,22 +66,6 @@ export class CzechDatePipe implements PipeTransform {
 Třída obsahuje funkci `transform(...)`. Ve funkci provedeme základní převedení datumu na anglický a posléze jen nahradíme text měsíce českým ekvivalentem.
 
 Povšimněte si řádku 4, který definuje, že funkce se bude chovat jako "pipe" - její použití uvidíme v komponentě.
-
-## Tvorba komponent
-
-V projektu použijeme 3 komponenty:
-
-* **event-list** jako hlavní komponentu, která bude zobrazovat seznam událostí, a interně bude v sobě zobrazovat další komponenty,
-* **event-create** jako komponentu pro pro vytváření nové události; bude zobrazena uvnitř hlavní komponenty,
-* **event-note** jako komponentu zobrazující poznámky u události a jejich přidávání a mazání; bude zobrazena uvnitř hlavní komponenty.
-
-Protože se hned na komponenty budeme odkazovat, vytvoříme je všechny najednou, do složky /src/app/components:
-
-```powershell
-ng g c event-create
-ng g c event-list
-ng g c event-note
-```
 
 ## Tvorba komponenty event-list
 
