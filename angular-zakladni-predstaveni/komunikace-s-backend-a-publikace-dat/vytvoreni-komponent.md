@@ -249,11 +249,9 @@ Finálně vytvoříme odesílací tlačítko. Tlačítko zašedneme (disabled), 
 
 ## Tvorba komponenty event-note
 
-asef
+Poslední komponentou je ta, která se stará jednak o zobrazení listu komentářu k události s možností jednotlivé položky smazat, a jednak mini-formuláře pro vložení nového komentáře
 
 ### Kód na pozadí - ts
-
-ase
 
 {% code title="event-note.component.ts" lineNumbers="true" %}
 ```typescript
@@ -296,11 +294,14 @@ export class EventNoteComponent {
         });
   }
 }
-
 ```
 {% endcode %}
 
-asf
+Na řádku 12 se vytvoří vstupní parametr `@Input` pro předání aktuálně zobrazované události. Na řádcích 14-16 se vytvoří formulář pro přidání nové položky. Na řádcích 19 a 20 se  v konstruktoru připraví objekty používané v komponentě.
+
+Na řádku 24 se definuje funkce volaná při potvrzení vložení nového komentáře k události. Nejdříve se  zjistí data z  formuláře (řádek 25) a následně se přes službu předají k uložení (řádek 26). Po úspěšném uložení se nově vytvořený komentář přidá k současným komentářům aktuální události (řádek 27).
+
+Na řádku 30 je uvedena funkce volaná při mazání poznámek. Jako svůj parametr přijímá `noteId` poznámky, která se má smazat. Nejdříve se provede potvrzovací dotaz na smazání položky (pro jednoduchost realizován s pomocí výchozí implementace prohlížeče - řádek 31), při potvrzení se následně požádá služba o smazání poznámky (řádek 32) a nakonec se ze seznamu aktuálních komentářů vybrané události smaže ten (ty), které mají odpovídající ID (řádky 34-36).
 
 ### Kód na popředí - html
 
