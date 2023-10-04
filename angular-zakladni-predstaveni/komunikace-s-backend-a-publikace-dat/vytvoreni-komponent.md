@@ -164,11 +164,80 @@ Kód na popředí vložíme do souboru `event-list.component.html`:
 ```
 {% endcode %}
 
+Blok řádků 3-5 se zobrazí pouze v případě, kdy je kolekce událostí prázdná.&#x20;
 
+Naopak, blok řádků 7-31 se zobrazuje, pokud je kolekce událostí neprázdná. V tom případě se každá položka (iterace řádek 9) kreslí do tzv. "karty" BootStrapu ([https://getbootstrap.com/docs/5.0/components/card/](https://getbootstrap.com/docs/5.0/components/card/)). Záhlaví karty obsahuje název události (řádek 13) a badge ([https://getbootstrap.com/docs/5.0/components/badge/](https://getbootstrap.com/docs/5.0/components/badge/)) s počtem poznámek (řádky 16-20, povšimněte si podmíněného přiřazení stylů podle počtu poznámek u události). V samotném těle karty se zobrazí datum události formátovaný námi dříve vytvořenou pipe `CzechDatePipe` (řádek 24) a vloženou komponentou pro poznámky (řádek 26). Konečně, na konci stránky se zobrazuje formulář pro přidání nových událostí s vloženou komponentou (řádek 37).
 
 ## Tvorba komponenty event-create
 
+### Kód na pozadí - ts
+
+Kód na pozadí sestaví zejména podkladové prvky pro angular-reactový formulář a obsluhující metodu:
+
+{% code title="event-create.component.ts" lineNumbers="true" %}
+```typescript
+import {Component, EventEmitter, Output} from '@angular/core';
+import {EventService} from "../../services/event.service";
+import {FormBuilder, Validators} from "@angular/forms";
+import {EventDto} from "../../model/event-dto";
+
+@Component({
+  selector: 'app-event-create',
+  templateUrl: './event-create.component.html',
+  styleUrls: ['./event-create.component.css']
+})
+export class EventCreateComponent {
+
+  protected form = this.fb.group({
+    text: ['', Validators.required],
+    dateTime: ['', Validators.required]
+  });
+  @Output() onCreated = new EventEmitter<EventDto>();
+
+  constructor(
+    private eventService: EventService,
+    private fb: FormBuilder) {
+  }
+
+  protected submitNewEvent() {
+    const text = this.form.get("text")?.value!;
+    const dateTimeS = this.form.get("dateTime")?.value!;
+    const dateTime = new Date(dateTimeS);
+
+    this.eventService.create(text, dateTime)
+      .subscribe(q => this.onCreated.emit(q));
+  }
+}
+
+```
+{% endcode %}
+
+
+
+### Kód na popředí - html
+
 asef
+
+{% code title="event-create.component.html" lineNumbers="true" %}
+```html
+<form [formGroup]="form" (ngSubmit)="submitNewEvent()">
+  <div class="form-group mt-1">
+    <label for="title">Název události</label>
+    <input type="text" name="title" id="title" class="form-control" formControlName="text" />
+  </div>
+  <div class="form-group mt-1">
+    <label for="dateTime">Datum a čas události</label>
+    <input type="datetime-local" name="dateTime" id="dateTime" class="form-control" formControlName="dateTime" />
+  </div>
+  <div class="form-group mt-1">
+    <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Vytvořit</button>
+  </div>
+</form>
+
+```
+{% endcode %}
+
+
 
 ## Tvorba komponenty event-note
 
