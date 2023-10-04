@@ -166,7 +166,7 @@ Kód na popředí vložíme do souboru `event-list.component.html`:
 ```
 {% endcode %}
 
-Blok řádků 3-5 se zobrazí pouze v případě, kdy je kolekce událostí prázdná.&#x20;
+Blok řádků 3-5 se zobrazí pouze v případě, kdy je kolekce událostí prázdná.
 
 Naopak, blok řádků 7-31 se zobrazuje, pokud je kolekce událostí neprázdná. V tom případě se každá položka (iterace řádek 9) kreslí do tzv. "karty" BootStrapu ([https://getbootstrap.com/docs/5.0/components/card/](https://getbootstrap.com/docs/5.0/components/card/)). Záhlaví karty obsahuje název události (řádek 13) a badge ([https://getbootstrap.com/docs/5.0/components/badge/](https://getbootstrap.com/docs/5.0/components/badge/)) s počtem poznámek (řádky 16-20, povšimněte si podmíněného přiřazení stylů podle počtu poznámek u události). V samotném těle karty se zobrazí datum události formátovaný námi dříve vytvořenou pipe `CzechDatePipe` (řádek 24) a vloženou komponentou pro poznámky (řádek 26). Konečně, na konci stránky se zobrazuje formulář pro přidání nových událostí s vloženou komponentou (řádek 37).
 
@@ -214,7 +214,7 @@ export class EventCreateComponent {
 ```
 {% endcode %}
 
-Řádky 13-16 vytvářejí podkladové objekty, na které se budou připojovat input-prvky z HTML komponenty. Řádek 17 je důležitý - definuje výstupní událost, pomocí které bude komponenta dávat vědět svému okolí navenek, že došlo k vytvoření nového objektu události. Zároveň bude tento objekt posílat jako parametr - `EventEmitter<EventDto>`.&#x20;
+Řádky 13-16 vytvářejí podkladové objekty, na které se budou připojovat input-prvky z HTML komponenty. Řádek 17 je důležitý - definuje výstupní událost, pomocí které bude komponenta dávat vědět svému okolí navenek, že došlo k vytvoření nového objektu události. Zároveň bude tento objekt posílat jako parametr - `EventEmitter<EventDto>`.
 
 {% hint style="info" %}
 Problematika komunikace mezi komponenty je zajímavá - viz například [https://angular.io/guide/component-interaction](https://angular.io/guide/component-interaction) nebo [https://upmostly.com/angular/inter-component-communication-in-angular-joining-service](https://upmostly.com/angular/inter-component-communication-in-angular-joining-service).
@@ -299,9 +299,9 @@ export class EventNoteComponent {
 ```
 {% endcode %}
 
-Na řádku 12 se vytvoří vstupní parametr `@Input` pro předání aktuálně zobrazované události. Na řádcích 14-16 se vytvoří formulář pro přidání nové položky. Na řádcích 19 a 20 se  v konstruktoru připraví objekty používané v komponentě.
+Na řádku 12 se vytvoří vstupní parametr `@Input` pro předání aktuálně zobrazované události. Na řádcích 14-16 se vytvoří formulář pro přidání nové položky. Na řádcích 19 a 20 se v konstruktoru připraví objekty používané v komponentě.
 
-Na řádku 24 se definuje funkce volaná při potvrzení vložení nového komentáře k události. Nejdříve se  zjistí data z  formuláře (řádek 25) a následně se přes službu předají k uložení (řádek 26). Po úspěšném uložení se nově vytvořený komentář přidá k současným komentářům aktuální události (řádek 27).
+Na řádku 24 se definuje funkce volaná při potvrzení vložení nového komentáře k události. Nejdříve se zjistí data z formuláře (řádek 25) a následně se přes službu předají k uložení (řádek 26). Po úspěšném uložení se nově vytvořený komentář přidá k současným komentářům aktuální události (řádek 27).
 
 Na řádku 30 je uvedena funkce volaná při mazání poznámek. Jako svůj parametr přijímá `noteId` poznámky, která se má smazat. Nejdříve se provede potvrzovací dotaz na smazání položky (pro jednoduchost realizován s pomocí výchozí implementace prohlížeče - řádek 31), při potvrzení se následně požádá služba o smazání poznámky (řádek 32) a nakonec se ze seznamu aktuálních komentářů vybrané události smaže ten (ty), které mají odpovídající ID (řádky 34-36).
 
@@ -334,5 +334,3 @@ Na řádku 30 je uvedena funkce volaná při mazání poznámek. Jako svůj para
 V kódu HTML se na řádcích 2-9 definují bloky zobrazující jednotlivé komentáře; každý blok obsahuje text komentáře (řádek 3) a tlačítko (a-la element `div`) pro smazání daného komentáře (řádek 4-8, všimněte si předání parametru mazaného `noteId` na řádku 5).
 
 Blok na řádku 12-18 definuje formulář pro přidání nové položky. Obsahuje jednoduchý input (řádek 14-15) a tlačítko (řádek 16).
-
-TODO: Posunout routing pod tvorbu komponent
