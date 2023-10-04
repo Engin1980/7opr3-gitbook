@@ -172,7 +172,7 @@ Naopak, blok řádků 7-31 se zobrazuje, pokud je kolekce událostí neprázdná
 
 ### Kód na pozadí - ts
 
-Kód na pozadí sestaví zejména podkladové prvky pro angular-reactový formulář a obsluhující metodu:
+Kód na pozadí sestaví zejména podkladové prvky pro angular-reaktivní formulář ([https://angular.io/guide/reactive-forms](https://angular.io/guide/reactive-forms)) a obsluhující metodu:
 
 {% code title="event-create.component.ts" lineNumbers="true" %}
 ```typescript
@@ -212,11 +212,17 @@ export class EventCreateComponent {
 ```
 {% endcode %}
 
+Řádky 13-16 vytvářejí podkladové objekty, na které se budou připojovat input-prvky z HTML komponenty. Řádek 17 je důležitý - definuje výstupní událost, pomocí které bude komponenta dávat vědět svému okolí navenek, že došlo k vytvoření nového objektu události. Zároveň bude tento objekt posílat jako parametr - `EventEmitter<EventDto>`.&#x20;
 
+{% hint style="info" %}
+Problematika komunikace mezi komponenty je zajímavá - viz například [https://angular.io/guide/component-interaction](https://angular.io/guide/component-interaction) nebo [https://upmostly.com/angular/inter-component-communication-in-angular-joining-service](https://upmostly.com/angular/inter-component-communication-in-angular-joining-service).
+{% endhint %}
+
+Řádky 20-21 jen zajistí vytvoření požadovaných objektů v konstruktoru. Funkce na řádku 24 se volá při potvrzení HTML formuláře a žádosti o vytvoření nového objektu. Z formuláře nejdříve získáme zadaná data (řádky 25-27) a následně přes službu zažádáme o jejich uložení (řádek 29) a po úspěšeném uložení vyvoláme navázanou událost (řádek 30).
 
 ### Kód na popředí - html
 
-asef
+Kód na popředí obsahuje pouze formulář.
 
 {% code title="event-create.component.html" lineNumbers="true" %}
 ```html
@@ -237,10 +243,95 @@ asef
 ```
 {% endcode %}
 
+Na formuláři nedříve připojíme objekty z pozadí a potvrzovací událost (řádek 1, `[formGroup]` a `(ngSubmit)`). Následně vytvoříme vstupní prvky a připojíme je k objektům pozadí (řádky 4, 8, atribut `formControlName`).
 
+Finálně vytvoříme odesílací tlačítko. Tlačítko zašedneme (disabled), pokud formulář neobsahuje validní data (`[disabled]=...`).
 
 ## Tvorba komponenty event-note
 
 asef
+
+### Kód na pozadí - ts
+
+ase
+
+{% code title="event-note.component.ts" lineNumbers="true" %}
+```typescript
+import {Component, Input} from '@angular/core';
+import {EventDto} from "../../model/event-dto";
+import {FormBuilder} from "@angular/forms";
+import {EventService} from "../../services/event.service";
+
+@Component({
+  selector: 'app-event-note',
+  templateUrl: './event-note.component.html',
+  styleUrls: ['./event-note.component.css']
+})
+export class EventNoteComponent {
+  @Input() event: EventDto | undefined;
+
+  protected noteForm = this.fb.group({
+    text: ['']
+  });
+
+  constructor(
+    private fb: FormBuilder,
+    private eventService: EventService
+  ) {
+  }
+
+  onNoteSubmit() {
+    const text = this.noteForm.get("text")?.value!;
+    this.eventService.createNote(this.event?.eventId!, text).subscribe(
+      q => this.event?.notes.push(q));
+  }
+
+  protected deleteNote(noteId: number) {
+    if (confirm("Opravdu smazat poznámku?"))
+      this.eventService.deleteNote(noteId).subscribe(
+        () => {
+          const noteIndex = this.event?.notes.findIndex(q => q.noteId == noteId);
+          if (noteIndex != undefined)
+            this.event?.notes.splice(noteIndex, 1);
+        });
+  }
+}
+
+```
+{% endcode %}
+
+asf
+
+### Kód na popředí - html
+
+asef
+
+{% code title="event-note.component.html" lineNumbers="true" %}
+```typescript
+<div>
+  <div *ngFor="let note of event?.notes" class="d-flex">
+    <div>{{note.text}}</div>
+    <div class="ms-auto" style="cursor: pointer; color:#C00;font-weight: bold"
+         (click)="deleteNote(note.noteId)"
+         data-bs-toggle="tooltip" data-bs-placement="top" title="Smazat poznámku">
+      (x)
+    </div>
+  </div>
+</div>
+
+<form [formGroup]="noteForm" (ngSubmit)="onNoteSubmit()" class="row rows-cols-auto mt-3">
+  <div class="input-group input-group-sm">
+    <input type="text" class="form-control col-8" id="noteText" formControlName="text"
+           placeholder="Vložte poznámku"/>
+    <button type="submit" class="btn btn-sm btn-primary col-2">+</button>
+  </div>
+</form>
+
+```
+{% endcode %}
+
+base
+
+
 
 TODO: Posunout routing pod tvorbu komponent
