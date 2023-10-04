@@ -2,6 +2,8 @@
 
 Dalším krokem je vytvoření komponent, které budou zobrazovat data.
 
+<figure><img src="../../.gitbook/assets/angular-rgb-components.jpg" alt=""><figcaption></figcaption></figure>
+
 ## Routing
 
 Nejdříve přizpůsobíme routing. V naší aplikaci budeme mít pouze jednu hlavní zobrazovací komponentu. Proto uděláme jednu univerzální cestu. Do souboru `app-routing.module.ts` přidáme cestu (upravíme proměnnou `routes`):
@@ -305,8 +307,6 @@ Na řádku 30 je uvedena funkce volaná při mazání poznámek. Jako svůj para
 
 ### Kód na popředí - html
 
-asef
-
 {% code title="event-note.component.html" lineNumbers="true" %}
 ```typescript
 <div>
@@ -331,8 +331,8 @@ asef
 ```
 {% endcode %}
 
-base
+V kódu HTML se na řádcích 2-9 definují bloky zobrazující jednotlivé komentáře; každý blok obsahuje text komentáře (řádek 3) a tlačítko (a-la element `div`) pro smazání daného komentáře (řádek 4-8, všimněte si předání parametru mazaného `noteId` na řádku 5).
 
-
+Blok na řádku 12-18 definuje formulář pro přidání nové položky. Obsahuje jednoduchý input (řádek 14-15) a tlačítko (řádek 16).
 
 TODO: Posunout routing pod tvorbu komponent
