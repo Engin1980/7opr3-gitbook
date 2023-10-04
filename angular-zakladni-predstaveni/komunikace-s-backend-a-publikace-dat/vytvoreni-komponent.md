@@ -110,7 +110,61 @@ export class EventListComponent {
 
 V konstruktoru (řádek 16) připojíme do komponenty službu událostí `eventService`. Na řádku 13 definujeme `events` jako seznam událostí, které se budou zobrazovat. Tato proměnná se ihned incializuje jako prázdné pole `[]`, do kterého se při inicializaci komponenty (`ngOnInit()`, řádek 20) přes `eventService.getAll()` načtou všechny události a postupně se plní do seznamu událostí (řádek 23).
 
-Jako parametru funkce `subscribe(...)` ...
+Jako parametru funkce `subscribe(...)` (řádek 23-24) je struktura se dvěma prvky:
+
+* `next` říká, co se má dít s nově příchozím prvkem;
+* `error` říká, co se má stát v případě chyby.
+
+Na konci kódu je bonusová funkce `onEventCreated(...)`, která se volá, když vnitřní komponenta vytvoří novou událost. Nově vytvořená událost se pošle do této funkce jako parametr a funkce nový objekt přidá do seznamu objektů.
+
+### Kód popředí - html
+
+Kód na popředí vložíme do souboru `event-list.component.html`:
+
+{% code title="event-list.component.html" lineNumbers="true" %}
+```html
+<h3>Seznam událostí</h3>
+
+<div *ngIf="events.length == 0">
+  ... zatím žádné události
+</div>
+
+<div *ngIf="events.length != 0">
+  <div class="row">
+    <div *ngFor="let event of events" class="col-sm-12 col-md-6 col-lg-4  mb-2">
+      <div class="card">
+        <div class="card-header d-flex">
+          <div>
+            {{event.title}}
+          </div>
+          <div class="ms-auto">
+            <div class="badge ml-5"
+            [class.bg-primary]="event.notes && event.notes.length > 0"
+            [class.bg-secondary]="!event.notes || event.notes.length == 0">
+              {{event.notes.length}}
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          {{event.dateTime | czechDatePipe}}
+          <hr />
+          <app-event-note [event]="event"></app-event-note>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <h3 class="mt-3">
+    Vytvořit novou událost
+  </h3>
+  <app-event-create (onCreated)="onEventCreated($event)"></app-event-create>
+</div>
+```
+{% endcode %}
+
+
 
 ## Tvorba komponenty event-create
 
